@@ -28,6 +28,7 @@ $(BUILDDIR)/deploy:
 	@git clone -b "$(DEPLOYBRANCH)" "$(DEPLOYURI)" "$(BUILDDIR)/deploy"
 
 deploy: $(BUILDDIR)/deploy
+	@find "$(BUILDDIR)/deploy" -type f | xargs rm -fr
 	@$(SPHINXBUILD) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/deploy"
 	@git -C "$(BUILDDIR)/deploy" add -A
 	@git -C "$(BUILDDIR)/deploy" commit -am "deploy $(DEPLOYDATE)"
