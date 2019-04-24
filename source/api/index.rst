@@ -215,9 +215,10 @@ indices array with their numbers.
 KVM_GET_MSR_INDEX_LIST returns the guest msrs that are supported.  The list
 varies by kvm version and host processor, but does not change otherwise.
 
-Note: if kvm indicates supports MCE (KVM_CAP_MCE), then the MCE bank MSRs are
-not returned in the MSR list, as different vcpus can have a different number
-of banks, as set via the KVM_X86_SETUP_MCE ioctl.
+.. note::
+   if kvm indicates supports MCE (KVM_CAP_MCE), then the MCE bank MSRs are
+   not returned in the MSR list, as different vcpus can have a different number
+   of banks, as set via the KVM_X86_SETUP_MCE ioctl.
 
 KVM_GET_MSR_FEATURE_INDEX_LIST returns the list of MSRs that can be passed
 to the KVM_GET_MSRS system ioctl.  This lets userspace probe host capabilities
@@ -580,11 +581,11 @@ This is an asynchronous vcpu ioctl and can be invoked from any thread.
 4.17 KVM_DEBUG_GUEST
 --------------------------------------------------------------------------------
 
-Capability: basic
-Architectures: none
-Type: vcpu ioctl
-Parameters: none)
-Returns: -1 on error
+:Capability:    basic
+:Architectures: none
+:Type:          vcpu ioctl
+:Parameters:    none)
+:Returns:       -1 on error
 
 Support for this has been removed.  Use KVM_SET_GUEST_DEBUG instead.
 
@@ -592,22 +593,22 @@ Support for this has been removed.  Use KVM_SET_GUEST_DEBUG instead.
 4.18 KVM_GET_MSRS
 --------------------------------------------------------------------------------
 
-Capability: basic (vcpu), KVM_CAP_GET_MSR_FEATURES (system)
-Architectures: x86
-Type: system ioctl, vcpu ioctl
-Parameters: struct kvm_msrs (in/out)
-Returns: number of msrs successfully returned;
-        -1 on error
+:Capability:    basic (vcpu), KVM_CAP_GET_MSR_FEATURES (system)
+:Architectures: x86
+:Type:          system ioctl, vcpu ioctl
+:Parameters:    struct kvm_msrs (in/out)
+:Returns:       - number of msrs successfully returned
+                - -1 on error
 
 When used as a system ioctl:
-Reads the values of MSR-based features that are available for the VM.  This
-is similar to KVM_GET_SUPPORTED_CPUID, but it returns MSR indices and values.
-The list of msr-based features can be obtained using KVM_GET_MSR_FEATURE_INDEX_LIST
-in a system ioctl.
+   Reads the values of MSR-based features that are available for the VM.  This
+   is similar to KVM_GET_SUPPORTED_CPUID, but it returns MSR indices and values.
+   The list of msr-based features can be obtained using
+   KVM_GET_MSR_FEATURE_INDEX_LIST in a system ioctl.
 
 When used as a vcpu ioctl:
-Reads model-specific registers from the vcpu.  Supported msr indices can
-be obtained using KVM_GET_MSR_INDEX_LIST in a system ioctl.
+   Reads model-specific registers from the vcpu.  Supported msr indices can
+   be obtained using KVM_GET_MSR_INDEX_LIST in a system ioctl.
 
 .. code-block:: c
 
@@ -2320,11 +2321,12 @@ patterns depending on whether they're 32-bit or 64-bit registers:
   0x7020 0000 0001 00 <reg:5> <sel:3>   (32-bit)
   0x7030 0000 0001 00 <reg:5> <sel:3>   (64-bit)
 
-Note: KVM_REG_MIPS_CP0_ENTRYLO0 and KVM_REG_MIPS_CP0_ENTRYLO1 are the MIPS64
-versions of the EntryLo registers regardless of the word size of the host
-hardware, host kernel, guest, and whether XPA is present in the guest, i.e.
-with the RI and XI bits (if they exist) in bits 63 and 62 respectively, and
-the PFNX field starting at bit 30.
+.. note::
+   KVM_REG_MIPS_CP0_ENTRYLO0 and KVM_REG_MIPS_CP0_ENTRYLO1 are the MIPS64
+   versions of the EntryLo registers regardless of the word size of the host
+   hardware, host kernel, guest, and whether XPA is present in the guest, i.e.
+   with the RI and XI bits (if they exist) in bits 63 and 62 respectively, and
+   the PFNX field starting at bit 30.
 
 MIPS MAARs (see KVM_REG_MIPS_CP0_MAAR(*) above) have the following id bit
 patterns:
@@ -3256,8 +3258,9 @@ The skeydata_addr field is the address to a buffer containing count bytes of
 storage keys. Each byte in the buffer will be set as the storage key for a
 single frame starting at start_gfn for count frames.
 
-Note: If any architecturally invalid key value is found in the given data then
-the ioctl will return -EINVAL.
+.. note::
+   If any architecturally invalid key value is found in the given data then
+   the ioctl will return -EINVAL.
 
 --------------------------------------------------------------------------------
 4.92 KVM_S390_IRQ
@@ -3978,9 +3981,10 @@ moving ciphertext of those pages will not result in plaintext being
 swapped. So relocating (or migrating) physical backing pages for the SEV
 guest will require some additional steps.
 
-Note: The current SEV key management spec does not provide commands to
-swap or migrate (move) ciphertext pages. Hence, for now we pin the guest
-memory region registered with the ioctl.
+.. note::
+   The current SEV key management spec does not provide commands to
+   swap or migrate (move) ciphertext pages. Hence, for now we pin the guest
+   memory region registered with the ioctl.
 
 --------------------------------------------------------------------------------
 4.112 KVM_MEMORY_ENCRYPT_UNREG_REGION
@@ -4394,8 +4398,10 @@ The 'data' member contains, in its first 'len' bytes, the value as it would
 appear if the VCPU performed a load or store of the appropriate width directly
 to the byte array.
 
-NOTE: For KVM_EXIT_IO, KVM_EXIT_MMIO, KVM_EXIT_OSI, KVM_EXIT_PAPR and
-      KVM_EXIT_EPR the corresponding
+.. note::
+   For KVM_EXIT_IO, KVM_EXIT_MMIO, KVM_EXIT_OSI, KVM_EXIT_PAPR and
+   KVM_EXIT_EPR the corresponding
+
 operations are complete (and guest state is consistent) only after userspace
 has re-entered the kernel with KVM_RUN.  The kernel side will first finish
 incomplete operations and then check for pending signals.  Userspace
