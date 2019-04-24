@@ -3,12 +3,14 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Linux KVM Document's documentation!
-=================================================================
+KVM API Documentation
+=====================
+
+Origin: https://www.kernel.org/doc/Documentation/virtual/kvm/api.txt
 
 .. toctree::
    :maxdepth: 2
-   :caption: KVM API Document
+   :caption: Table Of Contents
    :glob:
 
    /api/*
