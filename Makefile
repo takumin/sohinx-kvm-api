@@ -6,6 +6,8 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 SOURCEDIR     = source
 BUILDDIR      = build
+DEPLOYURI     = git@github.com:takumin/sphinx-linux-kvm.git
+DEPLOYBRANCH  = gh-pages
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -20,3 +22,12 @@ help:
 
 livehtml:
 	@sphinx-autobuild -b html $(ALLSPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html"
+
+$(BUILDDIR)/deploy:
+	@git clone -b "$(DEPLOYBRANCH)" "$(DEPLOYURI)" "$(BUILDDIR)/deploy"
+
+deploy: $(BUILDDIR)/deploy
+	@$(SPHINXBUILD) "$(SOURCEDIR)" "$(BUILDDIR)/deploy" $(SPHINXOPTS) $(O)
+	@git -C "$(BUILDDIR)/deploy" add -A
+	@git -C "$(BUILDDIR)/deploy" commit -am "deploy $(shell date +\"%Y/%m/%d %H:%M:%S\")"
+	@git -C "$(BUILDDIR)/deploy" push
