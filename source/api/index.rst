@@ -5,18 +5,21 @@
 The kvm API is a set of ioctls that are issued to control various aspects
 of a virtual machine.  The ioctls belong to three classes:
 
- - System ioctls: These query and set global attributes which affect the
+System ioctls
+   These query and set global attributes which affect the
    whole kvm subsystem.  In addition a system ioctl is used to create
    virtual machines.
 
- - VM ioctls: These query and set attributes that affect an entire virtual
+VM ioctls
+   These query and set attributes that affect an entire virtual
    machine, for example memory layout.  In addition a VM ioctl is used to
    create virtual cpus (vcpus) and devices.
 
    VM ioctls must be issued from the same process (address space) that was
    used to create the VM.
 
- - vcpu ioctls: These query and set attributes that control the operation
+vcpu ioctls
+   These query and set attributes that control the operation
    of a single virtual cpu.
 
    vcpu ioctls should be issued from the same thread that was used to create
@@ -24,7 +27,8 @@ of a virtual machine.  The ioctls belong to three classes:
    the documentation.  Otherwise, the first ioctl after switching threads
    could see a performance impact.
 
- - device ioctls: These query and set attributes that control the operation
+device ioctls
+   These query and set attributes that control the operation
    of a single device.
 
    device ioctls must be issued from the same process (address space) that
@@ -67,22 +71,6 @@ discouraged and may have unwanted side effects, e.g. memory allocated
 by and on behalf of the VM's process may not be freed/unaccounted when
 the VM is shut down.
 
-It is important to note that althought VM ioctls may only be issued from
-the process that created the VM, a VM's lifecycle is associated with its
-file descriptor, not its creator (process).  In other words, the VM and
-its resources, *including the associated address space*, are not freed
-until the last reference to the VM's file descriptor has been released.
-For example, if fork() is issued after ioctl(KVM_CREATE_VM), the VM will
-not be freed until both the parent (original) process and its child have
-put their references to the VM's file descriptor.
-
-Because a VM's resources are not freed until the last reference to its
-file descriptor is released, creating additional references to a VM via
-via fork(), dup(), etc... without careful consideration is strongly
-discouraged and may have unwanted side effects, e.g. memory allocated
-by and on behalf of the VM's process may not be freed/unaccounted when
-the VM is shut down.
-
 ================================================================================
 3. Extensions
 ================================================================================
@@ -105,34 +93,39 @@ This section describes ioctls that can be used to control kvm guests.
 For each ioctl, the following information is provided along with a
 description:
 
-  Capability: which KVM extension provides this ioctl.  Can be 'basic',
-      which means that is will be provided by any kernel that supports
-      API version 12 (see section 4.1), a KVM_CAP_xyz constant, which
-      means availability needs to be checked with KVM_CHECK_EXTENSION
-      (see section 4.4), or 'none' which means that while not all kernels
-      support this ioctl, there's no capability bit to check its
-      availability: for kernels that don't support the ioctl,
-      the ioctl returns -ENOTTY.
+Capability
+   which KVM extension provides this ioctl.  Can be 'basic',
+   which means that is will be provided by any kernel that supports
+   API version 12 (see section 4.1), a KVM_CAP_xyz constant, which
+   means availability needs to be checked with KVM_CHECK_EXTENSION
+   (see section 4.4), or 'none' which means that while not all kernels
+   support this ioctl, there's no capability bit to check its
+   availability: for kernels that don't support the ioctl,
+   the ioctl returns -ENOTTY.
 
-  Architectures: which instruction set architectures provide this ioctl.
-      x86 includes both i386 and x86_64.
+Architectures
+   which instruction set architectures provide this ioctl.
+   x86 includes both i386 and x86_64.
 
-  Type: system, vm, or vcpu.
+Type
+   system, vm, or vcpu.
 
-  Parameters: what parameters are accepted by the ioctl.
+Parameters
+   what parameters are accepted by the ioctl.
 
-  Returns: the return value.  General error numbers (EBADF, ENOMEM, EINVAL)
-      are not detailed, but errors with specific meanings are.
+Returns
+   the return value.  General error numbers (EBADF, ENOMEM, EINVAL)
+   are not detailed, but errors with specific meanings are.
 
 --------------------------------------------------------------------------------
 4.1 KVM_GET_API_VERSION
 --------------------------------------------------------------------------------
 
-Capability: basic
-Architectures: all
-Type: system ioctl
-Parameters: none
-Returns: the constant KVM_API_VERSION (=12)
+:Capability:    basic
+:Architectures: all
+:Type:          system ioctl
+:Parameters:    none
+:Returns:       the constant KVM_API_VERSION (=12)
 
 This identifies the API version as the stable kvm API. It is not
 expected that this number will change.  However, Linux 2.6.20 and
@@ -145,11 +138,11 @@ described as 'basic' will be available.
 4.2 KVM_CREATE_VM
 --------------------------------------------------------------------------------
 
-Capability: basic
-Architectures: all
-Type: system ioctl
-Parameters: machine type identifier (KVM_VM_*)
-Returns: a VM fd that can be used to control the new virtual machine.
+:Capability:    basic
+:Architectures: all
+:Type:          system ioctl
+:Parameters:    machine type identifier (KVM_VM_*)
+:Returns:       a VM fd that can be used to control the new virtual machine.
 
 The new VM has no virtual cpus and no memory.
 You probably want to use 0 as machine type.
@@ -171,16 +164,17 @@ identifier, where IPA_Bits is the maximum width of any physical
 address used by the VM. The IPA_Bits is encoded in bits[7-0] of the
 machine type identifier.
 
-e.g, to configure a guest to use 48bit physical address size :
+e.g, to configure a guest to use 48bit physical address size: ::
 
-    vm_fd = ioctl(dev_fd, KVM_CREATE_VM, KVM_VM_TYPE_ARM_IPA_SIZE(48));
+   vm_fd = ioctl(dev_fd, KVM_CREATE_VM, KVM_VM_TYPE_ARM_IPA_SIZE(48));
 
-The requested size (IPA_Bits) must be :
-  0 - Implies default size, 40bits (for backward compatibility)
+The requested size (IPA_Bits) must be: ::
 
-  or
+   0 - Implies default size, 40bits (for backward compatibility)
 
-  N - Implies N bits, where N is a positive integer such that,
+   or
+
+   N - Implies N bits, where N is a positive integer such that,
       32 <= N <= Host_IPA_Limit
 
 Host_IPA_Limit is the maximum possible value for IPA_Bits on the host and
@@ -197,15 +191,15 @@ host physical address translations).
 4.3 KVM_GET_MSR_INDEX_LIST, KVM_GET_MSR_FEATURE_INDEX_LIST
 --------------------------------------------------------------------------------
 
-Capability: basic, KVM_CAP_GET_MSR_FEATURES for KVM_GET_MSR_FEATURE_INDEX_LIST
-Architectures: x86
-Type: system ioctl
-Parameters: struct kvm_msr_list (in/out)
-Returns: 0 on success; -1 on error
-Errors:
-  EFAULT:    the msr index list cannot be read from or written to
-  E2BIG:     the msr index list is to be to fit in the array specified by
-             the user.
+:Capability:    basic, KVM_CAP_GET_MSR_FEATURES for KVM_GET_MSR_FEATURE_INDEX_LIST
+:Architectures: x86
+:Type:          system ioctl
+:Parameters:    struct kvm_msr_list (in/out)
+:Returns:       - 0 on success
+                - -1 on error
+:Errors:        - EFAULT : the msr index list cannot be read from or written to
+                - E2BIG : the msr index list is to be to fit in the array
+                  specified by the user.
 
 .. code-block:: c
 
@@ -235,11 +229,12 @@ otherwise.
 4.4 KVM_CHECK_EXTENSION
 --------------------------------------------------------------------------------
 
-Capability: basic, KVM_CAP_CHECK_EXTENSION_VM for vm ioctl
-Architectures: all
-Type: system ioctl, vm ioctl
-Parameters: extension identifier (KVM_CAP_*)
-Returns: 0 if unsupported; 1 (or some other positive integer) if supported
+:Capability:    basic, KVM_CAP_CHECK_EXTENSION_VM for vm ioctl
+:Architectures: all
+:Type:          system ioctl, vm ioctl
+:Parameters:    extension identifier (KVM_CAP_*)
+:Returns:       - 0 if unsupported
+                - 1 (or some other positive integer) if supported
 
 The API allows the application to query about extensions to the core
 kvm API.  Userspace passes an extension identifier (an integer) and
@@ -255,11 +250,11 @@ with KVM_CAP_CHECK_EXTENSION_VM on the vm fd)
 4.5 KVM_GET_VCPU_MMAP_SIZE
 --------------------------------------------------------------------------------
 
-Capability: basic
-Architectures: all
-Type: system ioctl
-Parameters: none
-Returns: size of vcpu mmap area, in bytes
+:Capability:    basic
+:Architectures: all
+:Type:          system ioctl
+:Parameters:    none
+:Returns:       size of vcpu mmap area, in bytes
 
 The KVM_RUN ioctl (cf.) communicates with userspace via a shared
 memory region.  This ioctl returns the size of that region.  See the
@@ -269,11 +264,12 @@ KVM_RUN documentation for details.
 4.6 KVM_SET_MEMORY_REGION
 --------------------------------------------------------------------------------
 
-Capability: basic
-Architectures: all
-Type: vm ioctl
-Parameters: struct kvm_memory_region (in)
-Returns: 0 on success, -1 on error
+:Capability:    basic
+:Architectures: all
+:Type:          vm ioctl
+:Parameters:    struct kvm_memory_region (in)
+:Returns:       - 0 on success
+                - -1 on error
 
 This ioctl is obsolete and has been removed.
 
@@ -281,11 +277,12 @@ This ioctl is obsolete and has been removed.
 4.7 KVM_CREATE_VCPU
 --------------------------------------------------------------------------------
 
-Capability: basic
-Architectures: all
-Type: vm ioctl
-Parameters: vcpu id (apic id on x86)
-Returns: vcpu fd on success, -1 on error
+:Capability:    basic
+:Architectures: all
+:Type:          vm ioctl
+:Parameters:    vcpu id (apic id on x86)
+:Returns:       - vcpu fd on success
+                - -1 on error
 
 This API adds a vcpu to a virtual machine. No more than max_vcpus may be added.
 The vcpu id is an integer in the range [0, max_vcpu_id).
@@ -328,11 +325,11 @@ cpu's hardware control block.
 4.8 KVM_GET_DIRTY_LOG (vm ioctl)
 --------------------------------------------------------------------------------
 
-Capability: basic
-Architectures: x86
-Type: vm ioctl
-Parameters: struct kvm_dirty_log (in/out)
-Returns: 0 on success, -1 on error
+:Capability:    basic
+:Architectures: x86
+:Type:          vm ioctl
+:Parameters:    struct kvm_dirty_log (in/out)
+:Returns:       0 on success, -1 on error
 
 .. code-block:: c
 
@@ -364,11 +361,11 @@ see the description of the capability.
 4.9 KVM_SET_MEMORY_ALIAS
 --------------------------------------------------------------------------------
 
-Capability: basic
-Architectures: x86
-Type: vm ioctl
-Parameters: struct kvm_memory_alias (in)
-Returns: 0 (success), -1 (error)
+:Capability:    basic
+:Architectures: x86
+:Type:          vm ioctl
+:Parameters:    struct kvm_memory_alias (in)
+:Returns:       0 (success), -1 (error)
 
 This ioctl is obsolete and has been removed.
 
@@ -376,13 +373,12 @@ This ioctl is obsolete and has been removed.
 4.10 KVM_RUN
 --------------------------------------------------------------------------------
 
-Capability: basic
-Architectures: all
-Type: vcpu ioctl
-Parameters: none
-Returns: 0 on success, -1 on error
-Errors:
-  EINTR:     an unmasked signal is pending
+:Capability:    basic
+:Architectures: all
+:Type:          vcpu ioctl
+:Parameters:    none
+:Returns:       0 on success, -1 on error
+:Errors:        :EINTR:       an unmasked signal is pending
 
 This ioctl is used to run a guest virtual cpu.  While there are no
 explicit parameters, there is an implicit parameter block that can be
@@ -394,11 +390,11 @@ kvm_run' (see below).
 4.11 KVM_GET_REGS
 --------------------------------------------------------------------------------
 
-Capability: basic
-Architectures: all except ARM, arm64
-Type: vcpu ioctl
-Parameters: struct kvm_regs (out)
-Returns: 0 on success, -1 on error
+:Capability:    basic
+:Architectures: all except ARM, arm64
+:Type:          vcpu ioctl
+:Parameters:    struct kvm_regs (out)
+:Returns:       0 on success, -1 on error
 
 Reads the general purpose registers from the vcpu.
 
@@ -427,11 +423,12 @@ Reads the general purpose registers from the vcpu.
 4.12 KVM_SET_REGS
 --------------------------------------------------------------------------------
 
-Capability: basic
-Architectures: all except ARM, arm64
-Type: vcpu ioctl
-Parameters: struct kvm_regs (in)
-Returns: 0 on success, -1 on error
+:Capability:    basic
+:Architectures: all except ARM, arm64
+:Type:          vcpu ioctl
+:Parameters:    struct kvm_regs (in)
+:Returns:       - 0 on success
+                - -1 on error
 
 Writes the general purpose registers into the vcpu.
 
@@ -441,11 +438,12 @@ See KVM_GET_REGS for the data structure.
 4.13 KVM_GET_SREGS
 --------------------------------------------------------------------------------
 
-Capability: basic
-Architectures: x86, ppc
-Type: vcpu ioctl
-Parameters: struct kvm_sregs (out)
-Returns: 0 on success, -1 on error
+:Capability:    basic
+:Architectures: x86, ppc
+:Type:          vcpu ioctl
+:Parameters:    struct kvm_sregs (out)
+:Returns:       - 0 on success
+                - -1 on error
 
 Reads special registers from the vcpu.
 
@@ -472,11 +470,12 @@ but not yet injected into the cpu core.
 4.14 KVM_SET_SREGS
 --------------------------------------------------------------------------------
 
-Capability: basic
-Architectures: x86, ppc
-Type: vcpu ioctl
-Parameters: struct kvm_sregs (in)
-Returns: 0 on success, -1 on error
+:Capability:    basic
+:Architectures: x86, ppc
+:Type:          vcpu ioctl
+:Parameters:    struct kvm_sregs (in)
+:Returns:       - 0 on success
+                - -1 on error
 
 Writes special registers into the vcpu.  See KVM_GET_SREGS for the
 data structures.
@@ -485,11 +484,12 @@ data structures.
 4.15 KVM_TRANSLATE
 --------------------------------------------------------------------------------
 
-Capability: basic
-Architectures: x86
-Type: vcpu ioctl
-Parameters: struct kvm_translation (in/out)
-Returns: 0 on success, -1 on error
+:Capability:    basic
+:Architectures: x86
+:Type:          vcpu ioctl
+:Parameters:    struct kvm_translation (in/out)
+:Returns:       - 0 on success
+                - -1 on error
 
 Translates a virtual address according to the vcpu's current address
 translation mode.
@@ -512,11 +512,12 @@ translation mode.
 4.16 KVM_INTERRUPT
 --------------------------------------------------------------------------------
 
-Capability: basic
-Architectures: x86, ppc, mips
-Type: vcpu ioctl
-Parameters: struct kvm_interrupt (in)
-Returns: 0 on success, negative on failure.
+:Capability:    basic
+:Architectures: x86, ppc, mips
+:Type:          vcpu ioctl
+:Parameters:    struct kvm_interrupt (in)
+:Returns:       - 0 on success
+                - negative on failure.
 
 Queues a hardware interrupt vector to be injected.
 
@@ -530,11 +531,11 @@ Queues a hardware interrupt vector to be injected.
 
 X86:
 
-Returns: 0 on success,
-	 -EEXIST if an interrupt is already enqueued
-	 -EINVAL the the irq number is invalid
-	 -ENXIO if the PIC is in the kernel
-	 -EFAULT if the pointer is invalid
+:Returns: - 0 on success,
+          - EEXIST if an interrupt is already enqueued
+          - EINVAL the the irq number is invalid
+          - ENXIO if the PIC is in the kernel
+          - EFAULT if the pointer is invalid
 
 Note 'irq' is an interrupt vector, not an interrupt pin or line. This
 ioctl is useful if the in-kernel PIC is not used.
