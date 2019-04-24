@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Linux KVM Document'
+project = 'Linux KVM'
 copyright = '2019, Takumi Takahashi'
 author = 'Takumi Takahashi'
 
