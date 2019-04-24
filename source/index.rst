@@ -9,7 +9,7 @@ KVM API Documentation
 Origin: https://www.kernel.org/doc/Documentation/virtual/kvm/api.txt
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Table Of Contents
    :glob:
 

@@ -1,0 +1,357 @@
+================================================================================
+7. Capabilities that can be enabled on VMs
+================================================================================
+
+There are certain capabilities that change the behavior of the virtual
+machine when enabled. To enable them, please see section 4.37. Below
+you can find a list of capabilities and what their effect on the VM
+is when enabling them.
+
+The following information is provided along with the description:
+
+  Architectures: which instruction set architectures provide this ioctl.
+      x86 includes both i386 and x86_64.
+
+  Parameters: what parameters are accepted by the capability.
+
+  Returns: the return value.  General error numbers (EBADF, ENOMEM, EINVAL)
+      are not detailed, but errors with specific meanings are.
+
+--------------------------------------------------------------------------------
+7.1 KVM_CAP_PPC_ENABLE_HCALL
+--------------------------------------------------------------------------------
+
+Architectures: ppc
+Parameters: args[0] is the sPAPR hcall number
+	    args[1] is 0 to disable, 1 to enable in-kernel handling
+
+This capability controls whether individual sPAPR hypercalls (hcalls)
+get handled by the kernel or not.  Enabling or disabling in-kernel
+handling of an hcall is effective across the VM.  On creation, an
+initial set of hcalls are enabled for in-kernel handling, which
+consists of those hcalls for which in-kernel handlers were implemented
+before this capability was implemented.  If disabled, the kernel will
+not to attempt to handle the hcall, but will always exit to userspace
+to handle it.  Note that it may not make sense to enable some and
+disable others of a group of related hcalls, but KVM does not prevent
+userspace from doing that.
+
+If the hcall number specified is not one that has an in-kernel
+implementation, the KVM_ENABLE_CAP ioctl will fail with an EINVAL
+error.
+
+--------------------------------------------------------------------------------
+7.2 KVM_CAP_S390_USER_SIGP
+--------------------------------------------------------------------------------
+
+Architectures: s390
+Parameters: none
+
+This capability controls which SIGP orders will be handled completely in user
+space. With this capability enabled, all fast orders will be handled completely
+in the kernel:
+- SENSE
+- SENSE RUNNING
+- EXTERNAL CALL
+- EMERGENCY SIGNAL
+- CONDITIONAL EMERGENCY SIGNAL
+
+All other orders will be handled completely in user space.
+
+Only privileged operation exceptions will be checked for in the kernel (or even
+in the hardware prior to interception). If this capability is not enabled, the
+old way of handling SIGP orders is used (partially in kernel and user space).
+
+--------------------------------------------------------------------------------
+7.3 KVM_CAP_S390_VECTOR_REGISTERS
+--------------------------------------------------------------------------------
+
+Architectures: s390
+Parameters: none
+Returns: 0 on success, negative value on error
+
+Allows use of the vector registers introduced with z13 processor, and
+provides for the synchronization between host and user space.  Will
+return -EINVAL if the machine does not support vectors.
+
+--------------------------------------------------------------------------------
+7.4 KVM_CAP_S390_USER_STSI
+--------------------------------------------------------------------------------
+
+Architectures: s390
+Parameters: none
+
+This capability allows post-handlers for the STSI instruction. After
+initial handling in the kernel, KVM exits to user space with
+KVM_EXIT_S390_STSI to allow user space to insert further data.
+
+Before exiting to userspace, kvm handlers should fill in s390_stsi field of
+vcpu->run:
+
+.. code-block:: c
+
+   struct {
+           __u64 addr;
+           __u8 ar;
+           __u8 reserved;
+           __u8 fc;
+           __u8 sel1;
+           __u16 sel2;
+   } s390_stsi;
+
+@addr - guest address of STSI SYSIB
+@fc   - function code
+@sel1 - selector 1
+@sel2 - selector 2
+@ar   - access register number
+
+KVM handlers should exit to userspace with rc = -EREMOTE.
+
+--------------------------------------------------------------------------------
+7.5 KVM_CAP_SPLIT_IRQCHIP
+--------------------------------------------------------------------------------
+
+Architectures: x86
+Parameters: args[0] - number of routes reserved for userspace IOAPICs
+Returns: 0 on success, -1 on error
+
+Create a local apic for each processor in the kernel. This can be used
+instead of KVM_CREATE_IRQCHIP if the userspace VMM wishes to emulate the
+IOAPIC and PIC (and also the PIT, even though this has to be enabled
+separately).
+
+This capability also enables in kernel routing of interrupt requests;
+when KVM_CAP_SPLIT_IRQCHIP only routes of KVM_IRQ_ROUTING_MSI type are
+used in the IRQ routing table.  The first args[0] MSI routes are reserved
+for the IOAPIC pins.  Whenever the LAPIC receives an EOI for these routes,
+a KVM_EXIT_IOAPIC_EOI vmexit will be reported to userspace.
+
+Fails if VCPU has already been created, or if the irqchip is already in the
+kernel (i.e. KVM_CREATE_IRQCHIP has already been called).
+
+--------------------------------------------------------------------------------
+7.6 KVM_CAP_S390_RI
+--------------------------------------------------------------------------------
+
+Architectures: s390
+Parameters: none
+
+Allows use of runtime-instrumentation introduced with zEC12 processor.
+Will return -EINVAL if the machine does not support runtime-instrumentation.
+Will return -EBUSY if a VCPU has already been created.
+
+--------------------------------------------------------------------------------
+7.7 KVM_CAP_X2APIC_API
+--------------------------------------------------------------------------------
+
+Architectures: x86
+Parameters: args[0] - features that should be enabled
+Returns: 0 on success, -EINVAL when args[0] contains invalid features
+
+Valid feature flags in args[0] are
+
+.. code-block:: c
+
+   #define KVM_X2APIC_API_USE_32BIT_IDS            (1ULL << 0)
+   #define KVM_X2APIC_API_DISABLE_BROADCAST_QUIRK  (1ULL << 1)
+
+Enabling KVM_X2APIC_API_USE_32BIT_IDS changes the behavior of
+KVM_SET_GSI_ROUTING, KVM_SIGNAL_MSI, KVM_SET_LAPIC, and KVM_GET_LAPIC,
+allowing the use of 32-bit APIC IDs.  See KVM_CAP_X2APIC_API in their
+respective sections.
+
+KVM_X2APIC_API_DISABLE_BROADCAST_QUIRK must be enabled for x2APIC to work
+in logical mode or with more than 255 VCPUs.  Otherwise, KVM treats 0xff
+as a broadcast even in x2APIC mode in order to support physical x2APIC
+without interrupt remapping.  This is undesirable in logical mode,
+where 0xff represents CPUs 0-7 in cluster 0.
+
+--------------------------------------------------------------------------------
+7.8 KVM_CAP_S390_USER_INSTR0
+--------------------------------------------------------------------------------
+
+Architectures: s390
+Parameters: none
+
+With this capability enabled, all illegal instructions 0x0000 (2 bytes) will
+be intercepted and forwarded to user space. User space can use this
+mechanism e.g. to realize 2-byte software breakpoints. The kernel will
+not inject an operating exception for these instructions, user space has
+to take care of that.
+
+This capability can be enabled dynamically even if VCPUs were already
+created and are running.
+
+--------------------------------------------------------------------------------
+7.9 KVM_CAP_S390_GS
+--------------------------------------------------------------------------------
+
+Architectures: s390
+Parameters: none
+Returns: 0 on success; -EINVAL if the machine does not support
+	 guarded storage; -EBUSY if a VCPU has already been created.
+
+Allows use of guarded storage for the KVM guest.
+
+--------------------------------------------------------------------------------
+7.10 KVM_CAP_S390_AIS
+--------------------------------------------------------------------------------
+
+Architectures: s390
+Parameters: none
+
+Allow use of adapter-interruption suppression.
+Returns: 0 on success; -EBUSY if a VCPU has already been created.
+
+--------------------------------------------------------------------------------
+7.11 KVM_CAP_PPC_SMT
+--------------------------------------------------------------------------------
+
+Architectures: ppc
+Parameters: vsmt_mode, flags
+
+Enabling this capability on a VM provides userspace with a way to set
+the desired virtual SMT mode (i.e. the number of virtual CPUs per
+virtual core).  The virtual SMT mode, vsmt_mode, must be a power of 2
+between 1 and 8.  On POWER8, vsmt_mode must also be no greater than
+the number of threads per subcore for the host.  Currently flags must
+be 0.  A successful call to enable this capability will result in
+vsmt_mode being returned when the KVM_CAP_PPC_SMT capability is
+subsequently queried for the VM.  This capability is only supported by
+HV KVM, and can only be set before any VCPUs have been created.
+The KVM_CAP_PPC_SMT_POSSIBLE capability indicates which virtual SMT
+modes are available.
+
+--------------------------------------------------------------------------------
+7.12 KVM_CAP_PPC_FWNMI
+--------------------------------------------------------------------------------
+
+Architectures: ppc
+Parameters: none
+
+With this capability a machine check exception in the guest address
+space will cause KVM to exit the guest with NMI exit reason. This
+enables QEMU to build error log and branch to guest kernel registered
+machine check handling routine. Without this capability KVM will
+branch to guests' 0x200 interrupt vector.
+
+--------------------------------------------------------------------------------
+7.13 KVM_CAP_X86_DISABLE_EXITS
+--------------------------------------------------------------------------------
+
+Architectures: x86
+Parameters: args[0] defines which exits are disabled
+Returns: 0 on success, -EINVAL when args[0] contains invalid exits
+
+Valid bits in args[0] are
+
+.. code-block:: c
+
+   #define KVM_X86_DISABLE_EXITS_MWAIT            (1 << 0)
+   #define KVM_X86_DISABLE_EXITS_HLT              (1 << 1)
+
+Enabling this capability on a VM provides userspace with a way to no
+longer intercept some instructions for improved latency in some
+workloads, and is suggested when vCPUs are associated to dedicated
+physical CPUs.  More bits can be added in the future; userspace can
+just pass the KVM_CHECK_EXTENSION result to KVM_ENABLE_CAP to disable
+all such vmexits.
+
+Do not enable KVM_FEATURE_PV_UNHALT if you disable HLT exits.
+
+--------------------------------------------------------------------------------
+7.14 KVM_CAP_S390_HPAGE_1M
+--------------------------------------------------------------------------------
+
+Architectures: s390
+Parameters: none
+Returns: 0 on success, -EINVAL if hpage module parameter was not set
+	 or cmma is enabled, or the VM has the KVM_VM_S390_UCONTROL
+	 flag set
+
+With this capability the KVM support for memory backing with 1m pages
+through hugetlbfs can be enabled for a VM. After the capability is
+enabled, cmma can't be enabled anymore and pfmfi and the storage key
+interpretation are disabled. If cmma has already been enabled or the
+hpage module parameter is not set to 1, -EINVAL is returned.
+
+While it is generally possible to create a huge page backed VM without
+this capability, the VM will not be able to run.
+
+--------------------------------------------------------------------------------
+7.15 KVM_CAP_MSR_PLATFORM_INFO
+--------------------------------------------------------------------------------
+
+Architectures: x86
+Parameters: args[0] whether feature should be enabled or not
+
+With this capability, a guest may read the MSR_PLATFORM_INFO MSR. Otherwise,
+a #GP would be raised when the guest tries to access. Currently, this
+capability does not enable write permissions of this MSR for the guest.
+
+--------------------------------------------------------------------------------
+7.16 KVM_CAP_PPC_NESTED_HV
+--------------------------------------------------------------------------------
+
+Architectures: ppc
+Parameters: none
+Returns: 0 on success, -EINVAL when the implementation doesn't support
+	 nested-HV virtualization.
+
+HV-KVM on POWER9 and later systems allows for "nested-HV"
+virtualization, which provides a way for a guest VM to run guests that
+can run using the CPU's supervisor mode (privileged non-hypervisor
+state).  Enabling this capability on a VM depends on the CPU having
+the necessary functionality and on the facility being enabled with a
+kvm-hv module parameter.
+
+--------------------------------------------------------------------------------
+7.17 KVM_CAP_EXCEPTION_PAYLOAD
+--------------------------------------------------------------------------------
+
+Architectures: x86
+Parameters: args[0] whether feature should be enabled or not
+
+With this capability enabled, CR2 will not be modified prior to the
+emulated VM-exit when L1 intercepts a #PF exception that occurs in
+L2. Similarly, for kvm-intel only, DR6 will not be modified prior to
+the emulated VM-exit when L1 intercepts a #DB exception that occurs in
+L2. As a result, when KVM_GET_VCPU_EVENTS reports a pending #PF (or
+#DB) exception for L2, exception.has_payload will be set and the
+faulting address (or the new DR6 bits*) will be reported in the
+exception_payload field. Similarly, when userspace injects a #PF (or
+#DB) into L2 using KVM_SET_VCPU_EVENTS, it is expected to set
+exception.has_payload and to put the faulting address (or the new DR6
+bits*) in the exception_payload field.
+
+This capability also enables exception.pending in struct
+kvm_vcpu_events, which allows userspace to distinguish between pending
+and injected exceptions.
+
+* For the new DR6 bits, note that bit 16 is set iff the #DB exception
+  will clear DR6.RTM.
+
+--------------------------------------------------------------------------------
+7.18 KVM_CAP_MANUAL_DIRTY_LOG_PROTECT
+--------------------------------------------------------------------------------
+
+Architectures: all
+Parameters: args[0] whether feature should be enabled or not
+
+With this capability enabled, KVM_GET_DIRTY_LOG will not automatically
+clear and write-protect all pages that are returned as dirty.
+Rather, userspace will have to do this operation separately using
+KVM_CLEAR_DIRTY_LOG.
+
+At the cost of a slightly more complicated operation, this provides better
+scalability and responsiveness for two reasons.  First,
+KVM_CLEAR_DIRTY_LOG ioctl can operate on a 64-page granularity rather
+than requiring to sync a full memslot; this ensures that KVM does not
+take spinlocks for an extended period of time.  Second, in some cases a
+large amount of time can pass between a call to KVM_GET_DIRTY_LOG and
+userspace actually using the data in the page.  Pages can be modified
+during this time, which is inefficint for both the guest and userspace:
+the guest will incur a higher penalty due to write protection faults,
+while userspace can see false reports of dirty pages.  Manual reprotection
+helps reducing this time, improving guest performance and reducing the
+number of dirty log false positives.
