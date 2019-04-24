@@ -207,10 +207,12 @@ Errors:
   E2BIG:     the msr index list is to be to fit in the array specified by
              the user.
 
-struct kvm_msr_list {
-	__u32 nmsrs; /* number of msrs in entries */
-	__u32 indices[0];
-};
+.. code-block:: c
+
+   struct kvm_msr_list {
+           __u32 nmsrs; /* number of msrs in entries */
+           __u32 indices[0];
+   };
 
 The user fills in the size of the indices array in nmsrs, and in return
 kvm adjusts nmsrs to reflect the actual number of msrs and fills in the
@@ -332,15 +334,17 @@ Type: vm ioctl
 Parameters: struct kvm_dirty_log (in/out)
 Returns: 0 on success, -1 on error
 
-/* for KVM_GET_DIRTY_LOG */
-struct kvm_dirty_log {
-	__u32 slot;
-	__u32 padding;
-	union {
-		void __user *dirty_bitmap; /* one bit per page */
-		__u64 padding;
-	};
-};
+.. code-block:: c
+
+   /* for KVM_GET_DIRTY_LOG */
+   struct kvm_dirty_log {
+           __u32 slot;
+           __u32 padding;
+           union {
+                   void __user *dirty_bitmap; /* one bit per page */
+                   __u64 padding;
+           };
+   };
 
 Given a memory slot, return a bitmap containing any pages dirtied
 since the last call to this ioctl.  Bit 0 is the first page in the
@@ -398,24 +402,26 @@ Returns: 0 on success, -1 on error
 
 Reads the general purpose registers from the vcpu.
 
-/* x86 */
-struct kvm_regs {
-	/* out (KVM_GET_REGS) / in (KVM_SET_REGS) */
-	__u64 rax, rbx, rcx, rdx;
-	__u64 rsi, rdi, rsp, rbp;
-	__u64 r8,  r9,  r10, r11;
-	__u64 r12, r13, r14, r15;
-	__u64 rip, rflags;
-};
+.. code-block:: c
 
-/* mips */
-struct kvm_regs {
-	/* out (KVM_GET_REGS) / in (KVM_SET_REGS) */
-	__u64 gpr[32];
-	__u64 hi;
-	__u64 lo;
-	__u64 pc;
-};
+   /* x86 */
+   struct kvm_regs {
+           /* out (KVM_GET_REGS) / in (KVM_SET_REGS) */
+           __u64 rax, rbx, rcx, rdx;
+           __u64 rsi, rdi, rsp, rbp;
+           __u64 r8,  r9,  r10, r11;
+           __u64 r12, r13, r14, r15;
+           __u64 rip, rflags;
+   };
+
+   /* mips */
+   struct kvm_regs {
+           /* out (KVM_GET_REGS) / in (KVM_SET_REGS) */
+           __u64 gpr[32];
+           __u64 hi;
+           __u64 lo;
+           __u64 pc;
+   };
 
 --------------------------------------------------------------------------------
 4.12 KVM_SET_REGS
@@ -443,18 +449,20 @@ Returns: 0 on success, -1 on error
 
 Reads special registers from the vcpu.
 
-/* x86 */
-struct kvm_sregs {
-	struct kvm_segment cs, ds, es, fs, gs, ss;
-	struct kvm_segment tr, ldt;
-	struct kvm_dtable gdt, idt;
-	__u64 cr0, cr2, cr3, cr4, cr8;
-	__u64 efer;
-	__u64 apic_base;
-	__u64 interrupt_bitmap[(KVM_NR_INTERRUPTS + 63) / 64];
-};
+.. code-block:: c
 
-/* ppc -- see arch/powerpc/include/uapi/asm/kvm.h */
+   /* x86 */
+   struct kvm_sregs {
+           struct kvm_segment cs, ds, es, fs, gs, ss;
+           struct kvm_segment tr, ldt;
+           struct kvm_dtable gdt, idt;
+           __u64 cr0, cr2, cr3, cr4, cr8;
+           __u64 efer;
+           __u64 apic_base;
+           __u64 interrupt_bitmap[(KVM_NR_INTERRUPTS + 63) / 64];
+   };
+
+   /* ppc -- see arch/powerpc/include/uapi/asm/kvm.h */
 
 interrupt_bitmap is a bitmap of pending external interrupts.  At most
 one bit may be set.  This interrupt has been acknowledged by the APIC
@@ -486,17 +494,19 @@ Returns: 0 on success, -1 on error
 Translates a virtual address according to the vcpu's current address
 translation mode.
 
-struct kvm_translation {
-	/* in */
-	__u64 linear_address;
+.. code-block:: c
 
-	/* out */
-	__u64 physical_address;
-	__u8  valid;
-	__u8  writeable;
-	__u8  usermode;
-	__u8  pad[5];
-};
+   struct kvm_translation {
+           /* in */
+           __u64 linear_address;
+
+           /* out */
+           __u64 physical_address;
+           __u8  valid;
+           __u8  writeable;
+           __u8  usermode;
+           __u8  pad[5];
+   };
 
 --------------------------------------------------------------------------------
 4.16 KVM_INTERRUPT
@@ -510,11 +520,13 @@ Returns: 0 on success, negative on failure.
 
 Queues a hardware interrupt vector to be injected.
 
-/* for KVM_INTERRUPT */
-struct kvm_interrupt {
-	/* in */
-	__u32 irq;
-};
+.. code-block:: c
+
+   /* for KVM_INTERRUPT */
+   struct kvm_interrupt {
+           /* in */
+           __u32 irq;
+   };
 
 X86:
 
@@ -596,18 +608,20 @@ When used as a vcpu ioctl:
 Reads model-specific registers from the vcpu.  Supported msr indices can
 be obtained using KVM_GET_MSR_INDEX_LIST in a system ioctl.
 
-struct kvm_msrs {
-	__u32 nmsrs; /* number of msrs in entries */
-	__u32 pad;
+.. code-block:: c
 
-	struct kvm_msr_entry entries[0];
-};
+   struct kvm_msrs {
+           __u32 nmsrs; /* number of msrs in entries */
+           __u32 pad;
 
-struct kvm_msr_entry {
-	__u32 index;
-	__u32 reserved;
-	__u64 data;
-};
+           struct kvm_msr_entry entries[0];
+   };
+
+   struct kvm_msr_entry {
+           __u32 index;
+           __u32 reserved;
+           __u64 data;
+   };
 
 Application code should set the 'nmsrs' member (which indicates the
 size of the entries array) and the 'index' member of each array entry.
@@ -643,21 +657,23 @@ Returns: 0 on success, -1 on error
 Defines the vcpu responses to the cpuid instruction.  Applications
 should use the KVM_SET_CPUID2 ioctl if available.
 
-struct kvm_cpuid_entry {
-	__u32 function;
-	__u32 eax;
-	__u32 ebx;
-	__u32 ecx;
-	__u32 edx;
-	__u32 padding;
-};
+.. code-block:: c
 
-/* for KVM_SET_CPUID */
-struct kvm_cpuid {
-	__u32 nent;
-	__u32 padding;
-	struct kvm_cpuid_entry entries[0];
-};
+   struct kvm_cpuid_entry {
+           __u32 function;
+           __u32 eax;
+           __u32 ebx;
+           __u32 ecx;
+           __u32 edx;
+           __u32 padding;
+   };
+
+   /* for KVM_SET_CPUID */
+   struct kvm_cpuid {
+           __u32 nent;
+           __u32 padding;
+           struct kvm_cpuid_entry entries[0];
+   };
 
 --------------------------------------------------------------------------------
 4.21 KVM_SET_SIGNAL_MASK
@@ -677,11 +693,13 @@ their traditional behaviour) will cause KVM_RUN to return with -EINTR.
 Note the signal will only be delivered if not blocked by the original
 signal mask.
 
-/* for KVM_SET_SIGNAL_MASK */
-struct kvm_signal_mask {
-	__u32 len;
-	__u8  sigset[0];
-};
+.. code-block:: c
+
+   /* for KVM_SET_SIGNAL_MASK */
+   struct kvm_signal_mask {
+           __u32 len;
+           __u8  sigset[0];
+   };
 
 --------------------------------------------------------------------------------
 4.22 KVM_GET_FPU
@@ -695,20 +713,22 @@ Returns: 0 on success, -1 on error
 
 Reads the floating point state from the vcpu.
 
-/* for KVM_GET_FPU and KVM_SET_FPU */
-struct kvm_fpu {
-	__u8  fpr[8][16];
-	__u16 fcw;
-	__u16 fsw;
-	__u8  ftwx;  /* in fxsave format */
-	__u8  pad1;
-	__u16 last_opcode;
-	__u64 last_ip;
-	__u64 last_dp;
-	__u8  xmm[16][16];
-	__u32 mxcsr;
-	__u32 pad2;
-};
+.. code-block:: c
+
+   /* for KVM_GET_FPU and KVM_SET_FPU */
+   struct kvm_fpu {
+           __u8  fpr[8][16];
+           __u16 fcw;
+           __u16 fsw;
+           __u8  ftwx;  /* in fxsave format */
+           __u8  pad1;
+           __u16 last_opcode;
+           __u64 last_ip;
+           __u64 last_dp;
+           __u8  xmm[16][16];
+           __u32 mxcsr;
+           __u32 pad2;
+   };
 
 --------------------------------------------------------------------------------
 4.23 KVM_SET_FPU
@@ -722,20 +742,22 @@ Returns: 0 on success, -1 on error
 
 Writes the floating point state to the vcpu.
 
-/* for KVM_GET_FPU and KVM_SET_FPU */
-struct kvm_fpu {
-	__u8  fpr[8][16];
-	__u16 fcw;
-	__u16 fsw;
-	__u8  ftwx;  /* in fxsave format */
-	__u8  pad1;
-	__u16 last_opcode;
-	__u64 last_ip;
-	__u64 last_dp;
-	__u8  xmm[16][16];
-	__u32 mxcsr;
-	__u32 pad2;
-};
+.. code-block:: c
+
+   /* for KVM_GET_FPU and KVM_SET_FPU */
+   struct kvm_fpu {
+           __u8  fpr[8][16];
+           __u16 fcw;
+           __u16 fsw;
+           __u8  ftwx;  /* in fxsave format */
+           __u8  pad1;
+           __u16 last_opcode;
+           __u64 last_ip;
+           __u64 last_dp;
+           __u8  xmm[16][16];
+           __u32 mxcsr;
+           __u32 pad2;
+   };
 
 --------------------------------------------------------------------------------
 4.24 KVM_CREATE_IRQCHIP
@@ -805,13 +827,15 @@ The irq_type field has the following values:
 
 In both cases, level is used to assert/deassert the line.
 
-struct kvm_irq_level {
-	union {
-		__u32 irq;     /* GSI */
-		__s32 status;  /* not used for KVM_IRQ_LEVEL */
-	};
-	__u32 level;           /* 0 or 1 */
-};
+.. code-block:: c
+
+   struct kvm_irq_level {
+           union {
+                   __u32 irq;     /* GSI */
+                   __s32 status;  /* not used for KVM_IRQ_LEVEL */
+           };
+           __u32 level;           /* 0 or 1 */
+   };
 
 --------------------------------------------------------------------------------
 4.26 KVM_GET_IRQCHIP
@@ -826,15 +850,17 @@ Returns: 0 on success, -1 on error
 Reads the state of a kernel interrupt controller created with
 KVM_CREATE_IRQCHIP into a buffer provided by the caller.
 
-struct kvm_irqchip {
-	__u32 chip_id;  /* 0 = PIC1, 1 = PIC2, 2 = IOAPIC */
-	__u32 pad;
-        union {
-		char dummy[512];  /* reserving space */
-		struct kvm_pic_state pic;
-		struct kvm_ioapic_state ioapic;
-	} chip;
-};
+.. code-block:: c
+
+   struct kvm_irqchip {
+           __u32 chip_id;  /* 0 = PIC1, 1 = PIC2, 2 = IOAPIC */
+           __u32 pad;
+           union {
+                   char dummy[512];  /* reserving space */
+                   struct kvm_pic_state pic;
+                   struct kvm_ioapic_state ioapic;
+           } chip;
+   };
 
 --------------------------------------------------------------------------------
 4.27 KVM_SET_IRQCHIP
@@ -849,15 +875,17 @@ Returns: 0 on success, -1 on error
 Sets the state of a kernel interrupt controller created with
 KVM_CREATE_IRQCHIP from a buffer provided by the caller.
 
-struct kvm_irqchip {
-	__u32 chip_id;  /* 0 = PIC1, 1 = PIC2, 2 = IOAPIC */
-	__u32 pad;
-        union {
-		char dummy[512];  /* reserving space */
-		struct kvm_pic_state pic;
-		struct kvm_ioapic_state ioapic;
-	} chip;
-};
+.. code-block:: c
+
+   struct kvm_irqchip {
+           __u32 chip_id;  /* 0 = PIC1, 1 = PIC2, 2 = IOAPIC */
+           __u32 pad;
+           union {
+                   char dummy[512];  /* reserving space */
+                   struct kvm_pic_state pic;
+                   struct kvm_ioapic_state ioapic;
+           } chip;
+   };
 
 --------------------------------------------------------------------------------
 4.28 KVM_XEN_HVM_CONFIG
@@ -875,15 +903,17 @@ blobs in userspace.  When the guest writes the MSR, kvm copies one
 page of a blob (32- or 64-bit, depending on the vcpu mode) to guest
 memory.
 
-struct kvm_xen_hvm_config {
-	__u32 flags;
-	__u32 msr;
-	__u64 blob_addr_32;
-	__u64 blob_addr_64;
-	__u8 blob_size_32;
-	__u8 blob_size_64;
-	__u8 pad2[30];
-};
+.. code-block:: c
+
+   struct kvm_xen_hvm_config {
+           __u32 flags;
+           __u32 msr;
+           __u64 blob_addr_32;
+           __u64 blob_addr_64;
+           __u8 blob_size_32;
+           __u8 blob_size_64;
+           __u8 pad2[30];
+   };
 
 --------------------------------------------------------------------------------
 4.29 KVM_GET_CLOCK
@@ -910,11 +940,13 @@ with KVM_SET_CLOCK.  KVM will try to make all VCPUs follow this clock,
 but the exact value read by each VCPU could differ, because the host
 TSC is not stable.
 
-struct kvm_clock_data {
-	__u64 clock;  /* kvmclock current value */
-	__u32 flags;
-	__u32 pad[9];
-};
+.. code-block:: c
+
+   struct kvm_clock_data {
+           __u64 clock;  /* kvmclock current value */
+           __u32 flags;
+           __u32 pad[9];
+   };
 
 --------------------------------------------------------------------------------
 4.30 KVM_SET_CLOCK
@@ -930,11 +962,13 @@ Sets the current timestamp of kvmclock to the value specified in its parameter.
 In conjunction with KVM_GET_CLOCK, it is used to ensure monotonicity on scenarios
 such as migration.
 
-struct kvm_clock_data {
-	__u64 clock;  /* kvmclock current value */
-	__u32 flags;
-	__u32 pad[9];
-};
+.. code-block:: c
+
+   struct kvm_clock_data {
+           __u64 clock;  /* kvmclock current value */
+           __u32 flags;
+           __u32 pad[9];
+   };
 
 --------------------------------------------------------------------------------
 4.31 KVM_GET_VCPU_EVENTS
@@ -952,38 +986,40 @@ X86:
 Gets currently pending exceptions, interrupts, and NMIs as well as related
 states of the vcpu.
 
-struct kvm_vcpu_events {
-	struct {
-		__u8 injected;
-		__u8 nr;
-		__u8 has_error_code;
-		__u8 pending;
-		__u32 error_code;
-	} exception;
-	struct {
-		__u8 injected;
-		__u8 nr;
-		__u8 soft;
-		__u8 shadow;
-	} interrupt;
-	struct {
-		__u8 injected;
-		__u8 pending;
-		__u8 masked;
-		__u8 pad;
-	} nmi;
-	__u32 sipi_vector;
-	__u32 flags;
-	struct {
-		__u8 smm;
-		__u8 pending;
-		__u8 smm_inside_nmi;
-		__u8 latched_init;
-	} smi;
-	__u8 reserved[27];
-	__u8 exception_has_payload;
-	__u64 exception_payload;
-};
+.. code-block:: c
+
+   struct kvm_vcpu_events {
+           struct {
+                   __u8 injected;
+                   __u8 nr;
+                   __u8 has_error_code;
+                   __u8 pending;
+                   __u32 error_code;
+           } exception;
+           struct {
+                   __u8 injected;
+                   __u8 nr;
+                   __u8 soft;
+                   __u8 shadow;
+           } interrupt;
+           struct {
+                   __u8 injected;
+                   __u8 pending;
+                   __u8 masked;
+                   __u8 pad;
+           } nmi;
+           __u32 sipi_vector;
+           __u32 flags;
+           struct {
+                   __u8 smm;
+                   __u8 pending;
+                   __u8 smm_inside_nmi;
+                   __u8 latched_init;
+           } smi;
+           __u8 reserved[27];
+           __u8 exception_has_payload;
+           __u64 exception_payload;
+   };
 
 The following bits are defined in the flags field:
 
@@ -1034,16 +1070,18 @@ Specifying exception.has_esr on a system that does not support it will return
 -EINVAL. Setting anything other than the lower 24bits of exception.serror_esr
 will return -EINVAL.
 
-struct kvm_vcpu_events {
-	struct {
-		__u8 serror_pending;
-		__u8 serror_has_esr;
-		/* Align it to 8 bytes */
-		__u8 pad[6];
-		__u64 serror_esr;
-	} exception;
-	__u32 reserved[12];
-};
+.. code-block:: c
+
+   struct kvm_vcpu_events {
+           struct {
+                   __u8 serror_pending;
+                   __u8 serror_has_esr;
+                   /* Align it to 8 bytes */
+                   __u8 pad[6];
+                   __u64 serror_esr;
+           } exception;
+           __u32 reserved[12];
+   };
 
 --------------------------------------------------------------------------------
 4.32 KVM_SET_VCPU_EVENTS
@@ -1102,13 +1140,15 @@ Returns: 0 on success, -1 on error
 
 Reads debug registers from the vcpu.
 
-struct kvm_debugregs {
-	__u64 db[4];
-	__u64 dr6;
-	__u64 dr7;
-	__u64 flags;
-	__u64 reserved[9];
-};
+.. code-block:: c
+
+   struct kvm_debugregs {
+           __u64 db[4];
+           __u64 dr6;
+           __u64 dr7;
+           __u64 flags;
+           __u64 reserved[9];
+   };
 
 --------------------------------------------------------------------------------
 4.34 KVM_SET_DEBUGREGS
@@ -1135,13 +1175,15 @@ Type: vm ioctl
 Parameters: struct kvm_userspace_memory_region (in)
 Returns: 0 on success, -1 on error
 
-struct kvm_userspace_memory_region {
-	__u32 slot;
-	__u32 flags;
-	__u64 guest_phys_addr;
-	__u64 memory_size; /* bytes */
-	__u64 userspace_addr; /* start of the userspace allocated memory */
-};
+.. code-block:: c
+
+   struct kvm_userspace_memory_region {
+           __u32 slot;
+           __u32 flags;
+           __u64 guest_phys_addr;
+           __u64 memory_size; /* bytes */
+           __u64 userspace_addr; /* start of the userspace allocated memory */
+   };
 
 /* for kvm_memory_region::flags */
 #define KVM_MEM_LOG_DIRTY_PAGES	(1UL << 0)
@@ -1235,23 +1277,31 @@ do support it, it only works for extensions that are supported for enablement.
 To check if a capability can be enabled, the KVM_CHECK_EXTENSION ioctl should
 be used.
 
-struct kvm_enable_cap {
-       /* in */
-       __u32 cap;
+.. code-block:: c
+
+   struct kvm_enable_cap {
+          /* in */
+          __u32 cap;
 
 The capability that is supposed to get enabled.
 
-       __u32 flags;
+.. code-block:: c
+
+          __u32 flags;
 
 A bitfield indicating future enhancements. Has to be 0 for now.
 
-       __u64 args[4];
+.. code-block:: c
+
+          __u64 args[4];
 
 Arguments for enabling a feature. If a feature needs initial values to
 function properly, this is the place to put them.
 
-       __u8  pad[64];
-};
+.. code-block:: c
+
+          __u8  pad[64];
+   };
 
 The vcpu ioctl should be used for vcpu-specific capabilities, the vm ioctl
 for vm-wide capabilities.
@@ -1266,9 +1316,11 @@ Type: vcpu ioctl
 Parameters: struct kvm_mp_state (out)
 Returns: 0 on success; -1 on error
 
-struct kvm_mp_state {
-	__u32 mp_state;
-};
+.. code-block:: c
+
+   struct kvm_mp_state {
+           __u32 mp_state;
+   };
 
 Returns the vcpu's current "multiprocessing state" (though also valid on
 uniprocessor guests).
@@ -1371,9 +1423,11 @@ Type: vcpu ioctl
 Parameters: struct kvm_xsave (out)
 Returns: 0 on success, -1 on error
 
-struct kvm_xsave {
-	__u32 region[1024];
-};
+.. code-block:: c
+
+   struct kvm_xsave {
+           __u32 region[1024];
+   };
 
 This ioctl would copy current vcpu's xsave struct to the userspace.
 
@@ -1387,9 +1441,11 @@ Type: vcpu ioctl
 Parameters: struct kvm_xsave (in)
 Returns: 0 on success, -1 on error
 
-struct kvm_xsave {
-	__u32 region[1024];
-};
+.. code-block:: c
+
+   struct kvm_xsave {
+           __u32 region[1024];
+   };
 
 This ioctl would copy userspace's xsave struct to the kernel.
 
@@ -1403,18 +1459,20 @@ Type: vcpu ioctl
 Parameters: struct kvm_xcrs (out)
 Returns: 0 on success, -1 on error
 
-struct kvm_xcr {
-	__u32 xcr;
-	__u32 reserved;
-	__u64 value;
-};
+.. code-block:: c
 
-struct kvm_xcrs {
-	__u32 nr_xcrs;
-	__u32 flags;
-	struct kvm_xcr xcrs[KVM_MAX_XCRS];
-	__u64 padding[16];
-};
+   struct kvm_xcr {
+           __u32 xcr;
+           __u32 reserved;
+           __u64 value;
+   };
+
+   struct kvm_xcrs {
+           __u32 nr_xcrs;
+           __u32 flags;
+           struct kvm_xcr xcrs[KVM_MAX_XCRS];
+           __u64 padding[16];
+   };
 
 This ioctl would copy current vcpu's xcrs to the userspace.
 
@@ -1428,18 +1486,20 @@ Type: vcpu ioctl
 Parameters: struct kvm_xcrs (in)
 Returns: 0 on success, -1 on error
 
-struct kvm_xcr {
-	__u32 xcr;
-	__u32 reserved;
-	__u64 value;
-};
+.. code-block:: c
 
-struct kvm_xcrs {
-	__u32 nr_xcrs;
-	__u32 flags;
-	struct kvm_xcr xcrs[KVM_MAX_XCRS];
-	__u64 padding[16];
-};
+   struct kvm_xcr {
+           __u32 xcr;
+           __u32 reserved;
+           __u64 value;
+   };
+
+   struct kvm_xcrs {
+           __u32 nr_xcrs;
+           __u32 flags;
+           struct kvm_xcr xcrs[KVM_MAX_XCRS];
+           __u64 padding[16];
+   };
 
 This ioctl would set vcpu's xcr to the value userspace specified.
 
@@ -1453,26 +1513,28 @@ Type: system ioctl
 Parameters: struct kvm_cpuid2 (in/out)
 Returns: 0 on success, -1 on error
 
-struct kvm_cpuid2 {
-	__u32 nent;
-	__u32 padding;
-	struct kvm_cpuid_entry2 entries[0];
-};
+.. code-block:: c
 
-#define KVM_CPUID_FLAG_SIGNIFCANT_INDEX		BIT(0)
-#define KVM_CPUID_FLAG_STATEFUL_FUNC		BIT(1)
-#define KVM_CPUID_FLAG_STATE_READ_NEXT		BIT(2)
+   struct kvm_cpuid2 {
+           __u32 nent;
+           __u32 padding;
+           struct kvm_cpuid_entry2 entries[0];
+   };
 
-struct kvm_cpuid_entry2 {
-	__u32 function;
-	__u32 index;
-	__u32 flags;
-	__u32 eax;
-	__u32 ebx;
-	__u32 ecx;
-	__u32 edx;
-	__u32 padding[3];
-};
+   #define KVM_CPUID_FLAG_SIGNIFCANT_INDEX      BIT(0)
+   #define KVM_CPUID_FLAG_STATEFUL_FUNC         BIT(1)
+   #define KVM_CPUID_FLAG_STATE_READ_NEXT       BIT(2)
+
+   struct kvm_cpuid_entry2 {
+           __u32 function;
+           __u32 index;
+           __u32 flags;
+           __u32 eax;
+           __u32 ebx;
+           __u32 ecx;
+           __u32 edx;
+           __u32 padding[3];
+   };
 
 This ioctl returns x86 cpuid features which are supported by both the
 hardware and kvm in its default configuration.  Userspace can use the
@@ -1520,6 +1582,8 @@ The TSC deadline timer feature (CPUID leaf 1, ecx[24]) is always returned
 as false, since the feature depends on KVM_CREATE_IRQCHIP for local APIC
 support.  Instead it is reported via
 
+.. code-block:: c
+
   ioctl(KVM_CHECK_EXTENSION, KVM_CAP_TSC_DEADLINE_TIMER)
 
 if that returns true and you use KVM_CREATE_IRQCHIP, or if you emulate the
@@ -1535,11 +1599,13 @@ Type: vm ioctl
 Parameters: struct kvm_ppc_pvinfo (out)
 Returns: 0 on success, !0 on error
 
-struct kvm_ppc_pvinfo {
-	__u32 flags;
-	__u32 hcall[4];
-	__u8  pad[108];
-};
+.. code-block:: c
+
+   struct kvm_ppc_pvinfo {
+           __u32 flags;
+           __u32 hcall[4];
+           __u8  pad[108];
+   };
 
 This ioctl fetches PV specific information that need to be passed to the guest
 using the device tree or other means from vm context.
@@ -1550,6 +1616,8 @@ If any additional field gets added to this structure later on, a bit for that
 additional piece of information will be set in the flags bitmap.
 
 The flags bitmap is defined as:
+
+.. code-block:: c
 
    /* the host supports the ePAPR idle hcall
    #define KVM_PPC_PVINFO_FLAGS_EV_IDLE   (1<<0)
@@ -1569,33 +1637,37 @@ Sets the GSI routing table entries, overwriting any previously set entries.
 On arm/arm64, GSI routing has the following limitation:
 - GSI routing does not apply to KVM_IRQ_LINE but only to KVM_IRQFD.
 
-struct kvm_irq_routing {
-	__u32 nr;
-	__u32 flags;
-	struct kvm_irq_routing_entry entries[0];
-};
+.. code-block:: c
+
+   struct kvm_irq_routing {
+           __u32 nr;
+           __u32 flags;
+           struct kvm_irq_routing_entry entries[0];
+   };
 
 No flags are specified so far, the corresponding field must be set to zero.
 
-struct kvm_irq_routing_entry {
-	__u32 gsi;
-	__u32 type;
-	__u32 flags;
-	__u32 pad;
-	union {
-		struct kvm_irq_routing_irqchip irqchip;
-		struct kvm_irq_routing_msi msi;
-		struct kvm_irq_routing_s390_adapter adapter;
-		struct kvm_irq_routing_hv_sint hv_sint;
-		__u32 pad[8];
-	} u;
-};
+.. code-block:: c
 
-/* gsi routing entry types */
-#define KVM_IRQ_ROUTING_IRQCHIP 1
-#define KVM_IRQ_ROUTING_MSI 2
-#define KVM_IRQ_ROUTING_S390_ADAPTER 3
-#define KVM_IRQ_ROUTING_HV_SINT 4
+   struct kvm_irq_routing_entry {
+           __u32 gsi;
+           __u32 type;
+           __u32 flags;
+           __u32 pad;
+           union {
+                   struct kvm_irq_routing_irqchip irqchip;
+                   struct kvm_irq_routing_msi msi;
+                   struct kvm_irq_routing_s390_adapter adapter;
+                   struct kvm_irq_routing_hv_sint hv_sint;
+                   __u32 pad[8];
+           } u;
+   };
+
+   /* gsi routing entry types */
+   #define KVM_IRQ_ROUTING_IRQCHIP 1
+   #define KVM_IRQ_ROUTING_MSI 2
+   #define KVM_IRQ_ROUTING_S390_ADAPTER 3
+   #define KVM_IRQ_ROUTING_HV_SINT 4
 
 flags:
 - KVM_MSI_VALID_DEVID: used along with KVM_IRQ_ROUTING_MSI routing entry
@@ -1605,20 +1677,22 @@ flags:
   never set the KVM_MSI_VALID_DEVID flag as the ioctl might fail.
 - zero otherwise
 
-struct kvm_irq_routing_irqchip {
-	__u32 irqchip;
-	__u32 pin;
-};
+.. code-block:: c
 
-struct kvm_irq_routing_msi {
-	__u32 address_lo;
-	__u32 address_hi;
-	__u32 data;
-	union {
-		__u32 pad;
-		__u32 devid;
-	};
-};
+   struct kvm_irq_routing_irqchip {
+           __u32 irqchip;
+           __u32 pin;
+   };
+
+   struct kvm_irq_routing_msi {
+           __u32 address_lo;
+           __u32 address_hi;
+           __u32 data;
+           union {
+                   __u32 pad;
+                   __u32 devid;
+           };
+   };
 
 If KVM_MSI_VALID_DEVID is set, devid contains a unique device identifier
 for the device that wrote the MSI message.  For PCI, this is usually a
@@ -1629,18 +1703,20 @@ feature of KVM_CAP_X2APIC_API capability is enabled.  If it is enabled,
 address_hi bits 31-8 provide bits 31-8 of the destination id.  Bits 7-0 of
 address_hi must be zero.
 
-struct kvm_irq_routing_s390_adapter {
-	__u64 ind_addr;
-	__u64 summary_addr;
-	__u64 ind_offset;
-	__u32 summary_offset;
-	__u32 adapter_id;
-};
+.. code-block:: c
 
-struct kvm_irq_routing_hv_sint {
-	__u32 vcpu;
-	__u32 sint;
-};
+   struct kvm_irq_routing_s390_adapter {
+           __u64 ind_addr;
+           __u64 summary_addr;
+           __u64 ind_offset;
+           __u32 summary_offset;
+           __u32 adapter_id;
+   };
+
+   struct kvm_irq_routing_hv_sint {
+           __u32 vcpu;
+           __u32 sint;
+   };
 
 --------------------------------------------------------------------------------
 4.55 KVM_SET_TSC_KHZ
@@ -1679,10 +1755,12 @@ Type: vcpu ioctl
 Parameters: struct kvm_lapic_state (out)
 Returns: 0 on success, -1 on error
 
-#define KVM_APIC_REG_SIZE 0x400
-struct kvm_lapic_state {
-	char regs[KVM_APIC_REG_SIZE];
-};
+.. code-block:: c
+
+   #define KVM_APIC_REG_SIZE 0x400
+   struct kvm_lapic_state {
+           char regs[KVM_APIC_REG_SIZE];
+   };
 
 Reads the Local APIC registers and copies them into the input argument.  The
 data format and layout are the same as documented in the architecture manual.
@@ -1708,10 +1786,12 @@ Type: vcpu ioctl
 Parameters: struct kvm_lapic_state (in)
 Returns: 0 on success, -1 on error
 
-#define KVM_APIC_REG_SIZE 0x400
-struct kvm_lapic_state {
-	char regs[KVM_APIC_REG_SIZE];
-};
+.. code-block:: c
+
+   #define KVM_APIC_REG_SIZE 0x400
+   struct kvm_lapic_state {
+           char regs[KVM_APIC_REG_SIZE];
+   };
 
 Copies the input argument into the Local APIC registers.  The data format
 and layout are the same as documented in the architecture manual.
@@ -1734,25 +1814,29 @@ This ioctl attaches or detaches an ioeventfd to a legal pio/mmio address
 within the guest.  A guest write in the registered address will signal the
 provided event instead of triggering an exit.
 
-struct kvm_ioeventfd {
-	__u64 datamatch;
-	__u64 addr;        /* legal pio/mmio address */
-	__u32 len;         /* 0, 1, 2, 4, or 8 bytes    */
-	__s32 fd;
-	__u32 flags;
-	__u8  pad[36];
-};
+.. code-block:: c
+
+   struct kvm_ioeventfd {
+           __u64 datamatch;
+           __u64 addr;        /* legal pio/mmio address */
+           __u32 len;         /* 0, 1, 2, 4, or 8 bytes    */
+           __s32 fd;
+           __u32 flags;
+           __u8  pad[36];
+   };
 
 For the special case of virtio-ccw devices on s390, the ioevent is matched
 to a subchannel/virtqueue tuple instead.
 
 The following flags are defined:
 
-#define KVM_IOEVENTFD_FLAG_DATAMATCH (1 << kvm_ioeventfd_flag_nr_datamatch)
-#define KVM_IOEVENTFD_FLAG_PIO       (1 << kvm_ioeventfd_flag_nr_pio)
-#define KVM_IOEVENTFD_FLAG_DEASSIGN  (1 << kvm_ioeventfd_flag_nr_deassign)
-#define KVM_IOEVENTFD_FLAG_VIRTIO_CCW_NOTIFY \
-	(1 << kvm_ioeventfd_flag_nr_virtio_ccw_notify)
+.. code-block:: c
+
+   #define KVM_IOEVENTFD_FLAG_DATAMATCH (1 << kvm_ioeventfd_flag_nr_datamatch)
+   #define KVM_IOEVENTFD_FLAG_PIO       (1 << kvm_ioeventfd_flag_nr_pio)
+   #define KVM_IOEVENTFD_FLAG_DEASSIGN  (1 << kvm_ioeventfd_flag_nr_deassign)
+   #define KVM_IOEVENTFD_FLAG_VIRTIO_CCW_NOTIFY \
+           (1 << kvm_ioeventfd_flag_nr_virtio_ccw_notify)
 
 If datamatch flag is set, the event will be signaled only if the written value
 to the registered address is equal to datamatch in struct kvm_ioeventfd.
@@ -1775,10 +1859,12 @@ Type: vcpu ioctl
 Parameters: struct kvm_dirty_tlb (in)
 Returns: 0 on success, -1 on error
 
-struct kvm_dirty_tlb {
-	__u64 bitmap;
-	__u32 num_dirty;
-};
+.. code-block:: c
+
+   struct kvm_dirty_tlb {
+           __u64 bitmap;
+           __u32 num_dirty;
+   };
 
 This must be called whenever userspace has changed an entry in the shared
 TLB, prior to calling KVM_RUN on the associated vcpu.
@@ -1814,11 +1900,13 @@ is an IOMMU for PAPR-style virtual I/O.  It is used to translate
 logical addresses used in virtual I/O into guest physical addresses,
 and provides a scatter/gather capability for PAPR virtual I/O.
 
-/* for KVM_CAP_SPAPR_TCE */
-struct kvm_create_spapr_tce {
-	__u64 liobn;
-	__u32 window_size;
-};
+.. code-block:: c
+
+   /* for KVM_CAP_SPAPR_TCE */
+   struct kvm_create_spapr_tce {
+           __u64 liobn;
+           __u32 window_size;
+   };
 
 The liobn field gives the logical IO bus number for which to create a
 TCE table.  The window_size field specifies the size of the DMA window
@@ -1853,10 +1941,12 @@ will be accessed by real-mode (MMU off) accesses in a KVM guest.
 POWER processors support a set of sizes for the RMA that usually
 includes 64MB, 128MB, 256MB and some larger powers of two.
 
-/* for KVM_ALLOCATE_RMA */
-struct kvm_allocate_rma {
-	__u64 rma_size;
-};
+.. code-block:: c
+
+   /* for KVM_ALLOCATE_RMA */
+   struct kvm_allocate_rma {
+           __u64 rma_size;
+   };
 
 The return value is a file descriptor which can be passed to mmap(2)
 to map the allocated RMA into userspace.  The mapped area can then be
@@ -1908,11 +1998,14 @@ Parameters: struct kvm_s390_ucas_mapping (in)
 Returns: 0 in case of success
 
 The parameter is defined like this:
-	struct kvm_s390_ucas_mapping {
-		__u64 user_addr;
-		__u64 vcpu_addr;
-		__u64 length;
-	};
+
+.. code-block:: c
+
+   struct kvm_s390_ucas_mapping {
+          __u64 user_addr;
+          __u64 vcpu_addr;
+          __u64 length;
+   };
 
 This ioctl maps the memory at "user_addr" with the length "length" to
 the vcpu's address space starting at "vcpu_addr". All parameters need to
@@ -1929,11 +2022,14 @@ Parameters: struct kvm_s390_ucas_mapping (in)
 Returns: 0 in case of success
 
 The parameter is defined like this:
-	struct kvm_s390_ucas_mapping {
-		__u64 user_addr;
-		__u64 vcpu_addr;
-		__u64 length;
-	};
+
+.. code-block:: c
+
+   struct kvm_s390_ucas_mapping {
+       __u64 user_addr;
+       __u64 vcpu_addr;
+       __u64 length;
+   };
 
 This ioctl unmaps the memory in the vcpu's address space starting at
 "vcpu_addr" with the length "length". The field "user_addr" is ignored.
@@ -1967,10 +2063,12 @@ Type: vcpu ioctl
 Parameters: struct kvm_one_reg (in)
 Returns: 0 on success, negative value on failure
 
-struct kvm_one_reg {
-       __u64 id;
-       __u64 addr;
-};
+.. code-block:: c
+
+   struct kvm_one_reg {
+          __u64 id;
+          __u64 addr;
+   };
 
 Using this ioctl, a single vcpu register can be set to a specific value
 defined by user space with the passed in struct kvm_one_reg, where id
@@ -2306,14 +2404,16 @@ Returns: >0 on delivery, 0 if guest blocked the MSI, and -1 on error
 Directly inject a MSI message. Only valid with in-kernel irqchip that handles
 MSI messages.
 
-struct kvm_msi {
-	__u32 address_lo;
-	__u32 address_hi;
-	__u32 data;
-	__u32 flags;
-	__u32 devid;
-	__u8  pad[12];
-};
+.. code-block:: c
+
+   struct kvm_msi {
+           __u32 address_lo;
+           __u32 address_hi;
+           __u32 data;
+           __u32 flags;
+           __u32 devid;
+           __u8  pad[12];
+   };
 
 flags: KVM_MSI_VALID_DEVID: devid contains a valid value.  The per-VM
   KVM_CAP_MSI_DEVID capability advertises the requirement to provide
@@ -2343,14 +2443,18 @@ Creates an in-kernel device model for the i8254 PIT. This call is only valid
 after enabling in-kernel irqchip support via KVM_CREATE_IRQCHIP. The following
 parameters have to be passed:
 
-struct kvm_pit_config {
-	__u32 flags;
-	__u32 pad[15];
-};
+.. code-block:: c
+
+   struct kvm_pit_config {
+           __u32 flags;
+           __u32 pad[15];
+   };
 
 Valid flags are:
 
-#define KVM_PIT_SPEAKER_DUMMY     1 /* emulate speaker port stub */
+.. code-block:: c
+
+   #define KVM_PIT_SPEAKER_DUMMY     1 /* emulate speaker port stub */
 
 PIT timer interrupts may use a per-VM kernel thread for injection. If it
 exists, this thread will have a name of the following pattern:
@@ -2375,16 +2479,20 @@ Returns: 0 on success, -1 on error
 Retrieves the state of the in-kernel PIT model. Only valid after
 KVM_CREATE_PIT2. The state is returned in the following structure:
 
-struct kvm_pit_state2 {
-	struct kvm_pit_channel_state channels[3];
-	__u32 flags;
-	__u32 reserved[9];
-};
+.. code-block:: c
+
+   struct kvm_pit_state2 {
+           struct kvm_pit_channel_state channels[3];
+           __u32 flags;
+           __u32 reserved[9];
+   };
 
 Valid flags are:
 
-/* disable PIT in HPET legacy mode */
-#define KVM_PIT_FLAGS_HPET_LEGACY  0x00000001
+.. code-block:: c
+
+   /* disable PIT in HPET legacy mode */
+   #define KVM_PIT_FLAGS_HPET_LEGACY  0x00000001
 
 This IOCTL replaces the obsolete KVM_GET_PIT.
 
@@ -2421,11 +2529,13 @@ device-tree properties for the guest operating system.
 The structure contains some global information, followed by an
 array of supported segment page sizes:
 
+.. code-block:: c
+
       struct kvm_ppc_smmu_info {
-	     __u64 flags;
-	     __u32 slb_size;
-	     __u32 pad;
-	     struct kvm_ppc_one_seg_page_size sps[KVM_PPC_PAGE_SIZES_MAX_SZ];
+             __u64 flags;
+             __u32 slb_size;
+             __u32 pad;
+             struct kvm_ppc_one_seg_page_size sps[KVM_PPC_PAGE_SIZES_MAX_SZ];
       };
 
 The supported flags are:
@@ -2440,8 +2550,8 @@ The supported flags are:
         standard 256M ones.
 
     - KVM_PPC_NO_HASH
-	This flag indicates that HPT guests are not supported by KVM,
-	thus all guests must use radix MMU mode.
+        This flag indicates that HPT guests are not supported by KVM,
+        thus all guests must use radix MMU mode.
 
 The "slb_size" field indicates how many SLB entries are supported
 
@@ -2449,10 +2559,12 @@ The "sps" array contains 8 entries indicating the supported base
 page sizes for a segment in increasing order. Each entry is defined
 as follow:
 
+.. code-block:: c
+
    struct kvm_ppc_one_seg_page_size {
-	__u32 page_shift;	/* Base page shift of segment (or 0) */
-	__u32 slb_enc;		/* SLB encoding for BookS */
-	struct kvm_ppc_one_page_size enc[KVM_PPC_PAGE_SIZES_MAX_SZ];
+        __u32 page_shift;       /* Base page shift of segment (or 0) */
+        __u32 slb_enc;	        /* SLB encoding for BookS */
+        struct kvm_ppc_one_page_size enc[KVM_PPC_PAGE_SIZES_MAX_SZ];
    };
 
 An entry with a "page_shift" of 0 is unused. Because the array is
@@ -2470,9 +2582,11 @@ corresponding encoding in the hash PTE. Similarly, the array is
 8 entries sorted by increasing sizes and an entry with a "0" shift
 is an empty entry and a terminator:
 
+.. code-block:: c
+
    struct kvm_ppc_one_page_size {
-	__u32 page_shift;	/* Page shift (or 0) */
-	__u32 pte_enc;		/* Encoding in the HPTE (>>12) */
+        __u32 page_shift;       /* Page shift (or 0) */
+        __u32 pte_enc;	        /* Encoding in the HPTE (>>12) */
    };
 
 The "pte_enc" field provides a value that can OR'ed into the hash
@@ -2571,11 +2685,13 @@ Allows to inject an interrupt to the guest. Interrupts can be floating
 
 Interrupt parameters are passed via kvm_s390_interrupt:
 
-struct kvm_s390_interrupt {
-	__u32 type;
-	__u32 parm;
-	__u64 parm64;
-};
+.. code-block:: c
+
+   struct kvm_s390_interrupt {
+           __u32 type;
+           __u32 parm;
+           __u64 parm64;
+   };
 
 type can be one of the following:
 
@@ -2618,16 +2734,18 @@ KVM_GET_HTAB_WRITE bit is set in the flags field of the argument, and
 can only be read if that bit is clear.  The argument struct looks like
 this:
 
-/* For KVM_PPC_GET_HTAB_FD */
-struct kvm_get_htab_fd {
-	__u64	flags;
-	__u64	start_index;
-	__u64	reserved[2];
-};
+.. code-block:: c
 
-/* Values for kvm_get_htab_fd.flags */
-#define KVM_GET_HTAB_BOLTED_ONLY	((__u64)0x1)
-#define KVM_GET_HTAB_WRITE		((__u64)0x2)
+   /* For KVM_PPC_GET_HTAB_FD */
+   struct kvm_get_htab_fd {
+           __u64        flags;
+           __u64        start_index;
+           __u64        reserved[2];
+   };
+
+   /* Values for kvm_get_htab_fd.flags */
+   #define KVM_GET_HTAB_BOLTED_ONLY     ((__u64)0x1)
+   #define KVM_GET_HTAB_WRITE           ((__u64)0x2)
 
 The `start_index' field gives the index in the HPT of the entry at
 which to start reading.  It is ignored when writing.
@@ -2646,11 +2764,13 @@ many valid HPT entries there are and how many invalid entries follow
 the valid entries.  The invalid entries are not represented explicitly
 in the stream.  The header format is:
 
-struct kvm_get_htab_header {
-	__u32	index;
-	__u16	n_valid;
-	__u16	n_invalid;
-};
+.. code-block:: c
+
+   struct kvm_get_htab_header {
+           __u32        index;
+           __u16        n_valid;
+           __u16        n_invalid;
+   };
 
 Writes to the fd create HPT entries starting at the index given in the
 header; first `n_valid' valid entries with contents from the data
@@ -2684,11 +2804,13 @@ Individual devices should not define flags.  Attributes should be used
 for specifying any behavior that is not implied by the device type
 number.
 
-struct kvm_create_device {
-	__u32	type;	/* in: KVM_DEV_TYPE_xxx */
-	__u32	fd;	/* out: device handle */
-	__u32	flags;	/* in: KVM_CREATE_DEVICE_xxx */
-};
+.. code-block:: c
+
+   struct kvm_create_device {
+           __u32        type;   /* in: KVM_DEV_TYPE_xxx */
+           __u32        fd;     /* out: device handle */
+           __u32        flags;  /* in: KVM_CREATE_DEVICE_xxx */
+   };
 
 --------------------------------------------------------------------------------
 4.80 KVM_SET_DEVICE_ATTR/KVM_GET_DEVICE_ATTR
@@ -2713,12 +2835,14 @@ semantics are device-specific.  See individual device documentation in
 the "devices" directory.  As with ONE_REG, the size of the data
 transferred is defined by the particular attribute.
 
-struct kvm_device_attr {
-	__u32	flags;		/* no flags currently defined */
-	__u32	group;		/* device-defined */
-	__u64	attr;		/* group-defined */
-	__u64	addr;		/* userspace address of attr data */
-};
+.. code-block:: c
+
+   struct kvm_device_attr {
+           __u32        flags;          /* no flags currently defined */
+           __u32        group;          /* device-defined */
+           __u64        attr;           /* group-defined */
+           __u64        addr;           /* userspace address of attr data */
+   };
 
 --------------------------------------------------------------------------------
 4.81 KVM_HAS_DEVICE_ATTR
@@ -2814,10 +2938,12 @@ Errors:
   E2BIG:     the reg index list is too big to fit in the array specified by
              the user (the number required will be written into n).
 
-struct kvm_reg_list {
-	__u64 n; /* number of registers in reg[] */
-	__u64 reg[0];
-};
+.. code-block:: c
+
+   struct kvm_reg_list {
+           __u64 n; /* number of registers in reg[] */
+           __u64 reg[0];
+   };
 
 This ioctl returns the guest registers that are supported for the
 KVM_GET_ONE_REG/KVM_SET_ONE_REG calls.
@@ -2838,10 +2964,12 @@ Errors:
   E2BIG:  Address outside guest physical address space
   EBUSY:  Address overlaps with other device range
 
-struct kvm_arm_device_addr {
-	__u64 id;
-	__u64 addr;
-};
+.. code-block:: c
+
+   struct kvm_arm_device_addr {
+           __u64 id;
+           __u64 addr;
+   };
 
 Specify a device address in the guest's physical address space where guests
 can access emulated or directly exposed devices, which the host kernel needs
@@ -2896,11 +3024,13 @@ Type: vcpu ioctl
 Parameters: struct kvm_guest_debug (in)
 Returns: 0 on success; -1 on error
 
-struct kvm_guest_debug {
-       __u32 control;
-       __u32 pad;
-       struct kvm_guest_debug_arch arch;
-};
+.. code-block:: c
+
+   struct kvm_guest_debug {
+          __u32 control;
+          __u32 pad;
+          struct kvm_guest_debug_arch arch;
+   };
 
 Set up the processor specific debug registers and configure vcpu for
 handling guest debug events. There are two parts to the structure, the
@@ -2948,28 +3078,32 @@ Type: system ioctl
 Parameters: struct kvm_cpuid2 (in/out)
 Returns: 0 on success, -1 on error
 
-struct kvm_cpuid2 {
-	__u32 nent;
-	__u32 flags;
-	struct kvm_cpuid_entry2 entries[0];
-};
+.. code-block:: c
+
+   struct kvm_cpuid2 {
+           __u32 nent;
+           __u32 flags;
+           struct kvm_cpuid_entry2 entries[0];
+   };
 
 The member 'flags' is used for passing flags from userspace.
 
-#define KVM_CPUID_FLAG_SIGNIFCANT_INDEX		BIT(0)
-#define KVM_CPUID_FLAG_STATEFUL_FUNC		BIT(1)
-#define KVM_CPUID_FLAG_STATE_READ_NEXT		BIT(2)
+.. code-block:: c
 
-struct kvm_cpuid_entry2 {
-	__u32 function;
-	__u32 index;
-	__u32 flags;
-	__u32 eax;
-	__u32 ebx;
-	__u32 ecx;
-	__u32 edx;
-	__u32 padding[3];
-};
+   #define KVM_CPUID_FLAG_SIGNIFCANT_INDEX      BIT(0)
+   #define KVM_CPUID_FLAG_STATEFUL_FUNC         BIT(1)
+   #define KVM_CPUID_FLAG_STATE_READ_NEXT       BIT(2)
+
+   struct kvm_cpuid_entry2 {
+           __u32 function;
+           __u32 index;
+           __u32 flags;
+           __u32 eax;
+           __u32 ebx;
+           __u32 ecx;
+           __u32 edx;
+           __u32 padding[3];
+   };
 
 This ioctl returns x86 cpuid features which are emulated by
 kvm.Userspace can use the information returned by this ioctl to query
@@ -3026,15 +3160,17 @@ Read or write data from/to the logical (virtual) memory of a VCPU.
 
 Parameters are specified via the following structure:
 
-struct kvm_s390_mem_op {
-	__u64 gaddr;		/* the guest address */
-	__u64 flags;		/* flags */
-	__u32 size;		/* amount of bytes */
-	__u32 op;		/* type of operation */
-	__u64 buf;		/* buffer in userspace */
-	__u8 ar;		/* the access register number */
-	__u8 reserved[31];	/* should be set to 0 */
-};
+.. code-block:: c
+
+   struct kvm_s390_mem_op {
+           __u64 gaddr;         /* the guest address */
+           __u64 flags;         /* flags */
+           __u32 size;          /* amount of bytes */
+           __u32 op;            /* type of operation */
+           __u64 buf;           /* buffer in userspace */
+           __u8 ar;             /* the access register number */
+           __u8 reserved[31];   /* should be set to 0 */
+   };
 
 The type of operation is specified in the "op" field. It is either
 KVM_S390_MEMOP_LOGICAL_READ for reading from logical memory space or
@@ -3072,13 +3208,15 @@ Returns: 0 on success, KVM_S390_GET_KEYS_NONE if guest is not using storage
 This ioctl is used to get guest storage key values on the s390
 architecture. The ioctl takes parameters via the kvm_s390_skeys struct.
 
-struct kvm_s390_skeys {
-	__u64 start_gfn;
-	__u64 count;
-	__u64 skeydata_addr;
-	__u32 flags;
-	__u32 reserved[9];
-};
+.. code-block:: c
+
+   struct kvm_s390_skeys {
+           __u64 start_gfn;
+           __u64 count;
+           __u64 skeydata_addr;
+           __u32 flags;
+           __u32 reserved[9];
+   };
 
 The start_gfn field is the number of the first guest frame whose storage keys
 you want to get.
@@ -3147,20 +3285,22 @@ possible via KVM_S390_INTERRUPT.
 
 Interrupt parameters are passed via kvm_s390_irq:
 
-struct kvm_s390_irq {
-	__u64 type;
-	union {
-		struct kvm_s390_io_info io;
-		struct kvm_s390_ext_info ext;
-		struct kvm_s390_pgm_info pgm;
-		struct kvm_s390_emerg_info emerg;
-		struct kvm_s390_extcall_info extcall;
-		struct kvm_s390_prefix_info prefix;
-		struct kvm_s390_stop_info stop;
-		struct kvm_s390_mchk_info mchk;
-		char reserved[64];
-	} u;
-};
+.. code-block:: c
+
+   struct kvm_s390_irq {
+           __u64 type;
+           union {
+                   struct kvm_s390_io_info io;
+                   struct kvm_s390_ext_info ext;
+                   struct kvm_s390_pgm_info pgm;
+                   struct kvm_s390_emerg_info emerg;
+                   struct kvm_s390_extcall_info extcall;
+                   struct kvm_s390_prefix_info prefix;
+                   struct kvm_s390_stop_info stop;
+                   struct kvm_s390_mchk_info mchk;
+                   char reserved[64];
+           } u;
+   };
 
 type can be one of the following:
 
@@ -3194,12 +3334,14 @@ pending interrupts in a single buffer. Use cases include migration
 and introspection. The parameter structure contains the address of a
 userspace buffer and its length:
 
-struct kvm_s390_irq_state {
-	__u64 buf;
-	__u32 flags;        /* will stay unused for compatibility reasons */
-	__u32 len;
-	__u32 reserved[4];  /* will stay unused for compatibility reasons */
-};
+.. code-block:: c
+
+   struct kvm_s390_irq_state {
+           __u64 buf;
+           __u32 flags;        /* will stay unused for compatibility reasons */
+           __u32 len;
+           __u32 reserved[4];  /* will stay unused for compatibility reasons */
+   };
 
 Userspace passes in the above struct and for each pending interrupt a
 struct kvm_s390_irq is copied to the provided buffer.
@@ -3232,12 +3374,14 @@ interrupts currently pending for the vcpu. It is intended for restoring
 interrupt state after a migration. The input parameter is a userspace buffer
 containing a struct kvm_s390_irq_state:
 
-struct kvm_s390_irq_state {
-	__u64 buf;
-	__u32 flags;        /* will stay unused for compatibility reasons */
-	__u32 len;
-	__u32 reserved[4];  /* will stay unused for compatibility reasons */
-};
+.. code-block:: c
+
+   struct kvm_s390_irq_state {
+           __u64 buf;
+           __u32 flags;        /* will stay unused for compatibility reasons */
+           __u32 len;
+           __u32 reserved[4];  /* will stay unused for compatibility reasons */
+   };
 
 The restrictions for flags and reserved apply as well.
 (see KVM_S390_GET_IRQ_STATE)
@@ -3305,14 +3449,16 @@ windows, described in 4.62 KVM_CREATE_SPAPR_TCE
 
 This capability uses extended struct in ioctl interface:
 
-/* for KVM_CAP_SPAPR_TCE_64 */
-struct kvm_create_spapr_tce_64 {
-	__u64 liobn;
-	__u32 page_shift;
-	__u32 flags;
-	__u64 offset;	/* in pages */
-	__u64 size; 	/* in pages */
-};
+.. code-block:: c
+
+   /* for KVM_CAP_SPAPR_TCE_64 */
+   struct kvm_create_spapr_tce_64 {
+           __u64 liobn;
+           __u32 page_shift;
+           __u32 flags;
+           __u64 offset; /* in pages */
+           __u64 size;   /* in pages */
+   };
 
 The aim of extension is to support an additional bigger DMA window with
 a variable page size.
@@ -3342,10 +3488,12 @@ vector(s) that i8254 injects.  Reinject mode dequeues a tick and injects its
 interrupt whenever there isn't a pending interrupt from i8254.
 !reinject mode injects an interrupt as soon as a tick arrives.
 
-struct kvm_reinject_control {
-	__u8 pit_reinject;
-	__u8 reserved[31];
-};
+.. code-block:: c
+
+   struct kvm_reinject_control {
+           __u8 pit_reinject;
+           __u8 reserved[31];
+   };
 
 pit_reinject = 0 (!reinject mode) is recommended, unless running an old
 operating system that uses the PIT for timing (e.g. Linux 2.4.x).
@@ -3366,10 +3514,12 @@ This ioctl controls whether the guest will use radix or HPT (hashed
 page table) translation, and sets the pointer to the process table for
 the guest.
 
-struct kvm_ppc_mmuv3_cfg {
-	__u64	flags;
-	__u64	process_table;
-};
+.. code-block:: c
+
+   struct kvm_ppc_mmuv3_cfg {
+           __u64        flags;
+           __u64        process_table;
+   };
 
 There are two bits that can be set in flags; KVM_PPC_MMUV3_RADIX and
 KVM_PPC_MMUV3_GTSE.  KVM_PPC_MMUV3_RADIX, if set, configures the guest
@@ -3400,14 +3550,16 @@ containing supported radix tree geometries, and (b) a list that maps
 page sizes to put in the "AP" (actual page size) field for the tlbie
 (TLB invalidate entry) instruction.
 
-struct kvm_ppc_rmmu_info {
-	struct kvm_ppc_radix_geom {
-		__u8	page_shift;
-		__u8	level_bits[4];
-		__u8	pad[3];
-	}	geometries[8];
-	__u32	ap_encodings[8];
-};
+.. code-block:: c
+
+   struct kvm_ppc_rmmu_info {
+           struct kvm_ppc_radix_geom {
+                   __u8	page_shift;
+                   __u8	level_bits[4];
+                   __u8	pad[3];
+           }	geometries[8];
+           __u32	ap_encodings[8];
+   };
 
 The geometries[] field gives up to 8 supported geometries for the
 radix page table, in terms of the log base 2 of the smallest page
@@ -3468,11 +3620,13 @@ Normally this will be called repeatedly with the same parameters until
 it returns <= 0.  The first call will initiate preparation, subsequent
 ones will monitor preparation until it completes or fails.
 
-struct kvm_ppc_resize_hpt {
-	__u64 flags;
-	__u32 shift;
-	__u32 pad;
-};
+.. code-block:: c
+
+   struct kvm_ppc_resize_hpt {
+           __u64 flags;
+           __u32 shift;
+           __u32 pad;
+   };
 
 --------------------------------------------------------------------------------
 4.103 KVM_PPC_RESIZE_HPT_COMMIT
@@ -3512,11 +3666,13 @@ HPT and the previous HPT will be discarded.
 
 On failure, the guest will still be operating on its previous HPT.
 
-struct kvm_ppc_resize_hpt {
-	__u64 flags;
-	__u32 shift;
-	__u32 pad;
-};
+.. code-block:: c
+
+   struct kvm_ppc_resize_hpt {
+           __u64 flags;
+           __u32 shift;
+           __u32 pad;
+   };
 
 --------------------------------------------------------------------------------
 4.104 KVM_X86_GET_MCE_CAP_SUPPORTED
@@ -3568,15 +3724,17 @@ Returns: 0 on success,
 Inject a machine check error (MCE) into the guest. The input
 parameter is:
 
-struct kvm_x86_mce {
-	__u64 status;
-	__u64 addr;
-	__u64 misc;
-	__u64 mcg_status;
-	__u8 bank;
-	__u8 pad1[7];
-	__u64 pad2[3];
-};
+.. code-block:: c
+
+   struct kvm_x86_mce {
+           __u64 status;
+           __u64 addr;
+           __u64 misc;
+           __u64 mcg_status;
+           __u8 bank;
+           __u8 pad1[7];
+           __u64 pad2[3];
+   };
 
 If the MCE being reported is an uncorrected error, KVM will
 inject it as an MCE exception into the guest. If the guest
@@ -3610,16 +3768,18 @@ member in the kvm_s390_cmma_log struct.  The values in the input struct are
 also updated as needed.
 Each CMMA value takes up one byte.
 
-struct kvm_s390_cmma_log {
-	__u64 start_gfn;
-	__u32 count;
-	__u32 flags;
-	union {
-		__u64 remaining;
-		__u64 mask;
-	};
-	__u64 values;
-};
+.. code-block:: c
+
+   struct kvm_s390_cmma_log {
+           __u64 start_gfn;
+           __u32 count;
+           __u32 flags;
+           union {
+                   __u64 remaining;
+                   __u64 mask;
+           };
+           __u64 values;
+   };
 
 start_gfn is the number of the first guest frame whose CMMA values are
 to be retrieved,
@@ -3695,16 +3855,18 @@ the CMMA values, but there are no restrictions on its use.
 The ioctl takes parameters via the kvm_s390_cmma_values struct.
 Each CMMA value takes up one byte.
 
-struct kvm_s390_cmma_log {
-	__u64 start_gfn;
-	__u32 count;
-	__u32 flags;
-	union {
-		__u64 remaining;
-		__u64 mask;
-	};
-	__u64 values;
-};
+.. code-block:: c
+
+   struct kvm_s390_cmma_log {
+           __u64 start_gfn;
+           __u32 count;
+           __u32 flags;
+           union {
+                   __u64 remaining;
+                   __u64 mask;
+           };
+           __u64 values;
+   };
 
 start_gfn indicates the starting guest frame number,
 
@@ -3743,12 +3905,14 @@ possible information leakage resulting from speculative execution (see
 CVE-2017-5715, CVE-2017-5753 and CVE-2017-5754).  The information is
 returned in struct kvm_ppc_cpu_char, which looks like this:
 
-struct kvm_ppc_cpu_char {
-	__u64	character;		/* characteristics of the CPU */
-	__u64	behaviour;		/* recommended software behaviour */
-	__u64	character_mask;		/* valid bits in character */
-	__u64	behaviour_mask;		/* valid bits in behaviour */
-};
+.. code-block:: c
+
+   struct kvm_ppc_cpu_char {
+           __u64	character;		/* characteristics of the CPU */
+           __u64	behaviour;		/* recommended software behaviour */
+           __u64	character_mask;		/* valid bits in character */
+           __u64	behaviour_mask;		/* valid bits in behaviour */
+   };
 
 For extensibility, the character_mask and behaviour_mask fields
 indicate which bits of character and behaviour have been filled in by
@@ -3844,20 +4008,26 @@ the specified Hyper-V connection id through the SIGNAL_EVENT hypercall, without
 causing a user exit.  SIGNAL_EVENT hypercall with non-zero event flag number
 (bits 24-31) still triggers a KVM_EXIT_HYPERV_HCALL user exit.
 
-struct kvm_hyperv_eventfd {
-	__u32 conn_id;
-	__s32 fd;
-	__u32 flags;
-	__u32 padding[3];
-};
+.. code-block:: c
+
+   struct kvm_hyperv_eventfd {
+           __u32 conn_id;
+           __s32 fd;
+           __u32 flags;
+           __u32 padding[3];
+   };
 
 The conn_id field should fit within 24 bits:
 
-#define KVM_HYPERV_CONN_ID_MASK		0x00ffffff
+.. code-block:: c
+
+   #define KVM_HYPERV_CONN_ID_MASK		0x00ffffff
 
 The acceptable values for the flags field are:
 
-#define KVM_HYPERV_EVENTFD_DEASSIGN	(1 << 0)
+.. code-block:: c
+
+   #define KVM_HYPERV_EVENTFD_DEASSIGN	(1 << 0)
 
 Returns: 0 on success,
 	-EINVAL if conn_id or flags is outside the allowed range
@@ -3878,32 +4048,34 @@ Errors:
              kvm_nested_state) exceeds the value of 'size' specified by
              the user; the size required will be written into size.
 
-struct kvm_nested_state {
-	__u16 flags;
-	__u16 format;
-	__u32 size;
-	union {
-		struct kvm_vmx_nested_state vmx;
-		struct kvm_svm_nested_state svm;
-		__u8 pad[120];
-	};
-	__u8 data[0];
-};
+.. code-block:: c
 
-#define KVM_STATE_NESTED_GUEST_MODE	0x00000001
-#define KVM_STATE_NESTED_RUN_PENDING	0x00000002
+   struct kvm_nested_state {
+           __u16 flags;
+           __u16 format;
+           __u32 size;
+           union {
+                   struct kvm_vmx_nested_state vmx;
+                   struct kvm_svm_nested_state svm;
+                   __u8 pad[120];
+           };
+           __u8 data[0];
+   };
 
-#define KVM_STATE_NESTED_SMM_GUEST_MODE	0x00000001
-#define KVM_STATE_NESTED_SMM_VMXON	0x00000002
+   #define KVM_STATE_NESTED_GUEST_MODE	0x00000001
+   #define KVM_STATE_NESTED_RUN_PENDING	0x00000002
 
-struct kvm_vmx_nested_state {
-	__u64 vmxon_pa;
-	__u64 vmcs_pa;
+   #define KVM_STATE_NESTED_SMM_GUEST_MODE	0x00000001
+   #define KVM_STATE_NESTED_SMM_VMXON	0x00000002
 
-	struct {
-		__u16 flags;
-	} smm;
-};
+   struct kvm_vmx_nested_state {
+           __u64 vmxon_pa;
+           __u64 vmcs_pa;
+
+           struct {
+                   __u16 flags;
+           } smm;
+   };
 
 This ioctl copies the vcpu's nested virtualization state from the kernel to
 userspace.
@@ -3965,16 +4137,18 @@ Type: vm ioctl
 Parameters: struct kvm_dirty_log (in)
 Returns: 0 on success, -1 on error
 
-/* for KVM_CLEAR_DIRTY_LOG */
-struct kvm_clear_dirty_log {
-	__u32 slot;
-	__u32 num_pages;
-	__u64 first_page;
-	union {
-		void __user *dirty_bitmap; /* one bit per page */
-		__u64 padding;
-	};
-};
+.. code-block:: c
+
+   /* for KVM_CLEAR_DIRTY_LOG */
+   struct kvm_clear_dirty_log {
+           __u32 slot;
+           __u32 num_pages;
+           __u64 first_page;
+           union {
+                   void __user *dirty_bitmap; /* one bit per page */
+                   __u64 padding;
+           };
+   };
 
 The ioctl clears the dirty status of pages in a memory slot, according to
 the bitmap that is passed in struct kvm_clear_dirty_log's dirty_bitmap
@@ -4006,22 +4180,24 @@ Type: vcpu ioctl
 Parameters: struct kvm_cpuid2 (in/out)
 Returns: 0 on success, -1 on error
 
-struct kvm_cpuid2 {
-	__u32 nent;
-	__u32 padding;
-	struct kvm_cpuid_entry2 entries[0];
-};
+.. code-block:: c
 
-struct kvm_cpuid_entry2 {
-	__u32 function;
-	__u32 index;
-	__u32 flags;
-	__u32 eax;
-	__u32 ebx;
-	__u32 ecx;
-	__u32 edx;
-	__u32 padding[3];
-};
+   struct kvm_cpuid2 {
+           __u32 nent;
+           __u32 padding;
+           struct kvm_cpuid_entry2 entries[0];
+   };
+
+   struct kvm_cpuid_entry2 {
+           __u32 function;
+           __u32 index;
+           __u32 flags;
+           __u32 eax;
+           __u32 ebx;
+           __u32 ecx;
+           __u32 edx;
+           __u32 padding[3];
+   };
 
 This ioctl returns x86 cpuid features leaves related to Hyper-V emulation in
 KVM.  Userspace can use the information returned by this ioctl to construct
@@ -4065,14 +4241,18 @@ execution by changing fields in kvm_run prior to calling the KVM_RUN
 ioctl, and obtain information about the reason KVM_RUN returned by
 looking up structure members.
 
-struct kvm_run {
-	/* in */
-	__u8 request_interrupt_window;
+.. code-block:: c
+
+   struct kvm_run {
+           /* in */
+           __u8 request_interrupt_window;
 
 Request that KVM_RUN return when it becomes possible to inject external
 interrupts into the guest.  Useful in conjunction with KVM_INTERRUPT.
 
-	__u8 immediate_exit;
+.. code-block:: c
+
+           __u8 immediate_exit;
 
 This field is polled once when KVM_RUN starts; if non-zero, KVM_RUN
 exits immediately, returning -EINTR.  In the common scenario where a
@@ -4083,80 +4263,100 @@ a signal handler that sets run->immediate_exit to a non-zero value.
 
 This field is ignored if KVM_CAP_IMMEDIATE_EXIT is not available.
 
-	__u8 padding1[6];
+.. code-block:: c
 
-	/* out */
-	__u32 exit_reason;
+           __u8 padding1[6];
+
+           /* out */
+           __u32 exit_reason;
 
 When KVM_RUN has returned successfully (return value 0), this informs
 application code why KVM_RUN has returned.  Allowable values for this
 field are detailed below.
 
-	__u8 ready_for_interrupt_injection;
+.. code-block:: c
+
+           __u8 ready_for_interrupt_injection;
 
 If request_interrupt_window has been specified, this field indicates
 an interrupt can be injected now with KVM_INTERRUPT.
 
-	__u8 if_flag;
+.. code-block:: c
+
+           __u8 if_flag;
 
 The value of the current interrupt flag.  Only valid if in-kernel
 local APIC is not used.
 
-	__u16 flags;
+.. code-block:: c
+
+           __u16 flags;
 
 More architecture-specific flags detailing state of the VCPU that may
 affect the device's behavior.  The only currently defined flag is
 KVM_RUN_X86_SMM, which is valid on x86 machines and is set if the
 VCPU is in system management mode.
 
-	/* in (pre_kvm_run), out (post_kvm_run) */
-	__u64 cr8;
+.. code-block:: c
+
+           /* in (pre_kvm_run), out (post_kvm_run) */
+           __u64 cr8;
 
 The value of the cr8 register.  Only valid if in-kernel local APIC is
 not used.  Both input and output.
 
-	__u64 apic_base;
+.. code-block:: c
+
+           __u64 apic_base;
 
 The value of the APIC BASE msr.  Only valid if in-kernel local
 APIC is not used.  Both input and output.
 
-	union {
-		/* KVM_EXIT_UNKNOWN */
-		struct {
-			__u64 hardware_exit_reason;
-		} hw;
+.. code-block:: c
+
+           union {
+                   /* KVM_EXIT_UNKNOWN */
+                   struct {
+                           __u64 hardware_exit_reason;
+                   } hw;
 
 If exit_reason is KVM_EXIT_UNKNOWN, the vcpu has exited due to unknown
 reasons.  Further architecture-specific information is available in
 hardware_exit_reason.
 
-		/* KVM_EXIT_FAIL_ENTRY */
-		struct {
-			__u64 hardware_entry_failure_reason;
-		} fail_entry;
+.. code-block:: c
+
+                   /* KVM_EXIT_FAIL_ENTRY */
+                   struct {
+                           __u64 hardware_entry_failure_reason;
+                   } fail_entry;
 
 If exit_reason is KVM_EXIT_FAIL_ENTRY, the vcpu could not be run due
 to unknown reasons.  Further architecture-specific information is
 available in hardware_entry_failure_reason.
 
-		/* KVM_EXIT_EXCEPTION */
-		struct {
-			__u32 exception;
-			__u32 error_code;
-		} ex;
+.. code-block:: c
+
+                   /* KVM_EXIT_EXCEPTION */
+                   struct {
+                           __u32 exception;
+                           __u32 error_code;
+                   } ex;
 
 Unused.
 
-		/* KVM_EXIT_IO */
-		struct {
-#define KVM_EXIT_IO_IN  0
-#define KVM_EXIT_IO_OUT 1
-			__u8 direction;
-			__u8 size; /* bytes */
-			__u16 port;
-			__u32 count;
-			__u64 data_offset; /* relative to kvm_run start */
-		} io;
+.. code-block:: c
+
+                   /* KVM_EXIT_IO */
+                   struct {
+   #define KVM_EXIT_IO_IN  0
+   #define KVM_EXIT_IO_OUT 1
+                           __u8 direction;
+                           __u8 size; /* bytes */
+                           __u16 port;
+                           __u32 count;
+                           __u64 data_offset; /* relative to kvm_run start */
+                   } io;
 
 If exit_reason is KVM_EXIT_IO, then the vcpu has
 executed a port I/O instruction which could not be satisfied by kvm.
@@ -4164,21 +4364,25 @@ data_offset describes where the data is located (KVM_EXIT_IO_OUT) or
 where kvm expects application code to place the data for the next
 KVM_RUN invocation (KVM_EXIT_IO_IN).  Data format is a packed array.
 
-		/* KVM_EXIT_DEBUG */
-		struct {
-			struct kvm_debug_exit_arch arch;
-		} debug;
+.. code-block:: c
+
+                   /* KVM_EXIT_DEBUG */
+                   struct {
+                           struct kvm_debug_exit_arch arch;
+                   } debug;
 
 If the exit_reason is KVM_EXIT_DEBUG, then a vcpu is processing a debug event
 for which architecture specific information is returned.
 
-		/* KVM_EXIT_MMIO */
-		struct {
-			__u64 phys_addr;
-			__u8  data[8];
-			__u32 len;
-			__u8  is_write;
-		} mmio;
+.. code-block:: c
+
+                   /* KVM_EXIT_MMIO */
+                   struct {
+                           __u64 phys_addr;
+                           __u8  data[8];
+                           __u32 len;
+                           __u8  is_write;
+                   } mmio;
 
 If exit_reason is KVM_EXIT_MMIO, then the vcpu has
 executed a memory-mapped I/O instruction which could not be satisfied
@@ -4197,54 +4401,64 @@ incomplete operations and then check for pending signals.  Userspace
 can re-enter the guest with an unmasked signal pending to complete
 pending operations.
 
-		/* KVM_EXIT_HYPERCALL */
-		struct {
-			__u64 nr;
-			__u64 args[6];
-			__u64 ret;
-			__u32 longmode;
-			__u32 pad;
-		} hypercall;
+.. code-block:: c
+
+                   /* KVM_EXIT_HYPERCALL */
+                   struct {
+                           __u64 nr;
+                           __u64 args[6];
+                           __u64 ret;
+                           __u32 longmode;
+                           __u32 pad;
+                   } hypercall;
 
 Unused.  This was once used for 'hypercall to userspace'.  To implement
 such functionality, use KVM_EXIT_IO (x86) or KVM_EXIT_MMIO (all except s390).
 Note KVM_EXIT_IO is significantly faster than KVM_EXIT_MMIO.
 
-		/* KVM_EXIT_TPR_ACCESS */
-		struct {
-			__u64 rip;
-			__u32 is_write;
-			__u32 pad;
-		} tpr_access;
+.. code-block:: c
+
+                   /* KVM_EXIT_TPR_ACCESS */
+                   struct {
+                           __u64 rip;
+                           __u32 is_write;
+                           __u32 pad;
+                   } tpr_access;
 
 To be documented (KVM_TPR_ACCESS_REPORTING).
 
-		/* KVM_EXIT_S390_SIEIC */
-		struct {
-			__u8 icptcode;
-			__u64 mask; /* psw upper half */
-			__u64 addr; /* psw lower half */
-			__u16 ipa;
-			__u32 ipb;
-		} s390_sieic;
+.. code-block:: c
+
+                   /* KVM_EXIT_S390_SIEIC */
+                   struct {
+                           __u8 icptcode;
+                           __u64 mask; /* psw upper half */
+                           __u64 addr; /* psw lower half */
+                           __u16 ipa;
+                           __u32 ipb;
+                   } s390_sieic;
 
 s390 specific.
 
-		/* KVM_EXIT_S390_RESET */
-#define KVM_S390_RESET_POR       1
-#define KVM_S390_RESET_CLEAR     2
-#define KVM_S390_RESET_SUBSYSTEM 4
-#define KVM_S390_RESET_CPU_INIT  8
-#define KVM_S390_RESET_IPL       16
-		__u64 s390_reset_flags;
+.. code-block:: c
+
+                   /* KVM_EXIT_S390_RESET */
+   #define KVM_S390_RESET_POR       1
+   #define KVM_S390_RESET_CLEAR     2
+   #define KVM_S390_RESET_SUBSYSTEM 4
+   #define KVM_S390_RESET_CPU_INIT  8
+   #define KVM_S390_RESET_IPL       16
+                   __u64 s390_reset_flags;
 
 s390 specific.
 
-		/* KVM_EXIT_S390_UCONTROL */
-		struct {
-			__u64 trans_exc_code;
-			__u32 pgm_code;
-		} s390_ucontrol;
+.. code-block:: c
+
+                   /* KVM_EXIT_S390_UCONTROL */
+                   struct {
+                           __u64 trans_exc_code;
+                           __u32 pgm_code;
+                   } s390_ucontrol;
 
 s390 specific. A page fault has occurred for a user controlled virtual
 machine (KVM_VM_S390_UNCONTROL) on it's host page table that cannot be
@@ -4254,19 +4468,23 @@ in the cpu's lowcore are presented here as defined by the z Architecture
 Principles of Operation Book in the Chapter for Dynamic Address Translation
 (DAT)
 
-		/* KVM_EXIT_DCR */
-		struct {
-			__u32 dcrn;
-			__u32 data;
-			__u8  is_write;
-		} dcr;
+.. code-block:: c
+
+                   /* KVM_EXIT_DCR */
+                   struct {
+                           __u32 dcrn;
+                           __u32 data;
+                           __u8  is_write;
+                   } dcr;
 
 Deprecated - was used for 440 KVM.
 
-		/* KVM_EXIT_OSI */
-		struct {
-			__u64 gprs[32];
-		} osi;
+.. code-block:: c
+
+                   /* KVM_EXIT_OSI */
+                   struct {
+                           __u64 gprs[32];
+                   } osi;
 
 MOL uses a special hypercall interface it calls 'OSI'. To enable it, we catch
 hypercalls and exit with this exit struct that contains all the guest gprs.
@@ -4276,12 +4494,14 @@ Userspace can now handle the hypercall and when it's done modify the gprs as
 necessary. Upon guest entry all guest GPRs will then be replaced by the values
 in this struct.
 
-		/* KVM_EXIT_PAPR_HCALL */
-		struct {
-			__u64 nr;
-			__u64 ret;
-			__u64 args[9];
-		} papr_hcall;
+.. code-block:: c
+
+                   /* KVM_EXIT_PAPR_HCALL */
+                   struct {
+                           __u64 nr;
+                           __u64 ret;
+                           __u64 args[9];
+                   } papr_hcall;
 
 This is used on 64-bit PowerPC when emulating a pSeries partition,
 e.g. with the 'pseries' machine type in qemu.  It occurs when the
@@ -4293,15 +4513,17 @@ The possible hypercalls are defined in the Power Architecture Platform
 Requirements (PAPR) document available from www.power.org (free
 developer registration required to access it).
 
-		/* KVM_EXIT_S390_TSCH */
-		struct {
-			__u16 subchannel_id;
-			__u16 subchannel_nr;
-			__u32 io_int_parm;
-			__u32 io_int_word;
-			__u32 ipb;
-			__u8 dequeued;
-		} s390_tsch;
+.. code-block:: c
+
+                   /* KVM_EXIT_S390_TSCH */
+                   struct {
+                           __u16 subchannel_id;
+                           __u16 subchannel_nr;
+                           __u32 io_int_parm;
+                           __u32 io_int_word;
+                           __u32 ipb;
+                           __u8 dequeued;
+                   } s390_tsch;
 
 s390 specific. This exit occurs when KVM_CAP_S390_CSS_SUPPORT has been enabled
 and TEST SUBCHANNEL was intercepted. If dequeued is set, a pending I/O
@@ -4309,10 +4531,12 @@ interrupt for the target subchannel has been dequeued and subchannel_id,
 subchannel_nr, io_int_parm and io_int_word contain the parameters for that
 interrupt. ipb is needed for instruction parameter decoding.
 
-		/* KVM_EXIT_EPR */
-		struct {
-			__u32 epr;
-		} epr;
+.. code-block:: c
+
+                   /* KVM_EXIT_EPR */
+                   struct {
+                           __u32 epr;
+                   } epr;
 
 On FSL BookE PowerPC chips, the interrupt controller has a fast patch
 interrupt acknowledge path to the core. When the core successfully
@@ -4328,14 +4552,16 @@ It gets triggered whenever both KVM_CAP_PPC_EPR are enabled and an
 external interrupt has just been delivered into the guest. User space
 should put the acknowledged interrupt vector into the 'epr' field.
 
-		/* KVM_EXIT_SYSTEM_EVENT */
-		struct {
-#define KVM_SYSTEM_EVENT_SHUTDOWN       1
-#define KVM_SYSTEM_EVENT_RESET          2
-#define KVM_SYSTEM_EVENT_CRASH          3
-			__u32 type;
-			__u64 flags;
-		} system_event;
+.. code-block:: c
+
+                   /* KVM_EXIT_SYSTEM_EVENT */
+                   struct {
+   #define KVM_SYSTEM_EVENT_SHUTDOWN       1
+   #define KVM_SYSTEM_EVENT_RESET          2
+   #define KVM_SYSTEM_EVENT_CRASH          3
+                           __u32 type;
+                           __u64 flags;
+                   } system_event;
 
 If exit_reason is KVM_EXIT_SYSTEM_EVENT then the vcpu has triggered
 a system-level event using some architecture specific mechanism (hypercall
@@ -4357,10 +4583,12 @@ Valid values for 'type' are:
    to ignore the request, or to gather VM memory core dump and/or
    reset/shutdown of the VM.
 
-		/* KVM_EXIT_IOAPIC_EOI */
-		struct {
-			__u8 vector;
-		} eoi;
+.. code-block:: c
+
+                   /* KVM_EXIT_IOAPIC_EOI */
+                   struct {
+                           __u8 vector;
+                   } eoi;
 
 Indicates that the VCPU's in-kernel local APIC received an EOI for a
 level-triggered IOAPIC interrupt.  This exit only triggers when the
@@ -4369,51 +4597,60 @@ the userspace IOAPIC should process the EOI and retrigger the interrupt if
 it is still asserted.  Vector is the LAPIC interrupt vector for which the
 EOI was received.
 
-		struct kvm_hyperv_exit {
-#define KVM_EXIT_HYPERV_SYNIC          1
-#define KVM_EXIT_HYPERV_HCALL          2
-			__u32 type;
-			union {
-				struct {
-					__u32 msr;
-					__u64 control;
-					__u64 evt_page;
-					__u64 msg_page;
-				} synic;
-				struct {
-					__u64 input;
-					__u64 result;
-					__u64 params[2];
-				} hcall;
-			} u;
-		};
-		/* KVM_EXIT_HYPERV */
-                struct kvm_hyperv_exit hyperv;
+.. code-block:: c
+
+                   struct kvm_hyperv_exit {
+   #define KVM_EXIT_HYPERV_SYNIC          1
+   #define KVM_EXIT_HYPERV_HCALL          2
+                           __u32 type;
+                           union {
+                                   struct {
+                                           __u32 msr;
+                                           __u64 control;
+                                           __u64 evt_page;
+                                           __u64 msg_page;
+                                   } synic;
+                                   struct {
+                                           __u64 input;
+                                           __u64 result;
+                                           __u64 params[2];
+                                   } hcall;
+                           } u;
+                   };
+                   /* KVM_EXIT_HYPERV */
+                   struct kvm_hyperv_exit hyperv;
+
 Indicates that the VCPU exits into userspace to process some tasks
 related to Hyper-V emulation.
 Valid values for 'type' are:
-	KVM_EXIT_HYPERV_SYNIC -- synchronously notify user-space about
+
+.. code-block:: c
+
+           KVM_EXIT_HYPERV_SYNIC -- synchronously notify user-space about
+
 Hyper-V SynIC state change. Notification is used to remap SynIC
 event/message pages and to enable/disable SynIC messages/events processing
 in userspace.
 
-		/* Fix the size of the union. */
-		char padding[256];
-	};
+.. code-block:: c
 
-	/*
-	 * shared registers between kvm and userspace.
-	 * kvm_valid_regs specifies the register classes set by the host
-	 * kvm_dirty_regs specified the register classes dirtied by userspace
-	 * struct kvm_sync_regs is architecture specific, as well as the
-	 * bits for kvm_valid_regs and kvm_dirty_regs
-	 */
-	__u64 kvm_valid_regs;
-	__u64 kvm_dirty_regs;
-	union {
-		struct kvm_sync_regs regs;
-		char padding[SYNC_REGS_SIZE_BYTES];
-	} s;
+                   /* Fix the size of the union. */
+                   char padding[256];
+           };
+
+           /*
+            * shared registers between kvm and userspace.
+            * kvm_valid_regs specifies the register classes set by the host
+            * kvm_dirty_regs specified the register classes dirtied by userspace
+            * struct kvm_sync_regs is architecture specific, as well as the
+            * bits for kvm_valid_regs and kvm_dirty_regs
+            */
+           __u64 kvm_valid_regs;
+           __u64 kvm_dirty_regs;
+           union {
+                   struct kvm_sync_regs regs;
+                   char padding[SYNC_REGS_SIZE_BYTES];
+           } s;
 
 If KVM_CAP_SYNC_REGS is defined, these fields allow userspace to access
 certain guest registers without having to call SET/GET_*REGS. Thus we can
@@ -4427,7 +4664,9 @@ Please note that the kernel is allowed to use the kvm_run structure as the
 primary storage for certain register types. Therefore, the kernel may use the
 values in kvm_run even if the corresponding bit in kvm_dirty_regs is not set.
 
-};
+.. code-block:: c
+
+   };
 
 
 ================================================================================
@@ -4497,12 +4736,14 @@ Target: vcpu
 Parameters: args[0] is the address of a struct kvm_config_tlb
 Returns: 0 on success; -1 on error
 
-struct kvm_config_tlb {
-	__u64 params;
-	__u64 array;
-	__u32 mmu_type;
-	__u32 array_len;
-};
+.. code-block:: c
+
+   struct kvm_config_tlb {
+           __u64 params;
+           __u64 array;
+           __u32 mmu_type;
+           __u32 array_len;
+   };
 
 Configures the virtual CPU's TLB array, establishing a shared memory area
 between userspace and KVM.  The "params" and "array" fields are userspace
@@ -4670,11 +4911,13 @@ into the vCPU even if they've been modified.
 
 Unused bitfields in the bitarrays must be set to zero.
 
-struct kvm_sync_regs {
-        struct kvm_regs regs;
-        struct kvm_sregs sregs;
-        struct kvm_vcpu_events events;
-};
+.. code-block:: c
+
+   struct kvm_sync_regs {
+           struct kvm_regs regs;
+           struct kvm_sregs sregs;
+           struct kvm_vcpu_events events;
+   };
 
 ================================================================================
 7. Capabilities that can be enabled on VMs
@@ -4765,14 +5008,17 @@ KVM_EXIT_S390_STSI to allow user space to insert further data.
 
 Before exiting to userspace, kvm handlers should fill in s390_stsi field of
 vcpu->run:
-struct {
-	__u64 addr;
-	__u8 ar;
-	__u8 reserved;
-	__u8 fc;
-	__u8 sel1;
-	__u16 sel2;
-} s390_stsi;
+
+.. code-block:: c
+
+   struct {
+           __u64 addr;
+           __u8 ar;
+           __u8 reserved;
+           __u8 fc;
+           __u8 sel1;
+           __u16 sel2;
+   } s390_stsi;
 
 @addr - guest address of STSI SYSIB
 @fc   - function code
@@ -4825,8 +5071,10 @@ Returns: 0 on success, -EINVAL when args[0] contains invalid features
 
 Valid feature flags in args[0] are
 
-#define KVM_X2APIC_API_USE_32BIT_IDS            (1ULL << 0)
-#define KVM_X2APIC_API_DISABLE_BROADCAST_QUIRK  (1ULL << 1)
+.. code-block:: c
+
+   #define KVM_X2APIC_API_USE_32BIT_IDS            (1ULL << 0)
+   #define KVM_X2APIC_API_DISABLE_BROADCAST_QUIRK  (1ULL << 1)
 
 Enabling KVM_X2APIC_API_USE_32BIT_IDS changes the behavior of
 KVM_SET_GSI_ROUTING, KVM_SIGNAL_MSI, KVM_SET_LAPIC, and KVM_GET_LAPIC,
@@ -4918,8 +5166,10 @@ Returns: 0 on success, -EINVAL when args[0] contains invalid exits
 
 Valid bits in args[0] are
 
-#define KVM_X86_DISABLE_EXITS_MWAIT            (1 << 0)
-#define KVM_X86_DISABLE_EXITS_HLT              (1 << 1)
+.. code-block:: c
+
+   #define KVM_X86_DISABLE_EXITS_MWAIT            (1 << 0)
+   #define KVM_X86_DISABLE_EXITS_HLT              (1 << 1)
 
 Enabling this capability on a VM provides userspace with a way to no
 longer intercept some instructions for improved latency in some
@@ -5305,6 +5555,7 @@ CPU when the exception is taken. If this virtual SError is taken to EL1 using
 AArch64, this value will be reported in the ISS field of ESR_ELx.
 
 See KVM_CAP_VCPU_EVENTS for more details.
+
 --------------------------------------------------------------------------------
 8.20 KVM_CAP_HYPERV_SEND_IPI
 --------------------------------------------------------------------------------
