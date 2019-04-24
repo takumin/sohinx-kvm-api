@@ -633,11 +633,12 @@ kvm will fill in the 'data' member.
 4.19 KVM_SET_MSRS
 --------------------------------------------------------------------------------
 
-Capability: basic
-Architectures: x86
-Type: vcpu ioctl
-Parameters: struct kvm_msrs (in)
-Returns: 0 on success, -1 on error
+:Capability:    basic
+:Architectures: x86
+:Type:          vcpu ioctl
+:Parameters:    struct kvm_msrs (in)
+:Returns:       - 0 on success
+                - -1 on error
 
 Writes model-specific registers to the vcpu.  See KVM_GET_MSRS for the
 data structures.
@@ -650,11 +651,12 @@ array entry.
 4.20 KVM_SET_CPUID
 --------------------------------------------------------------------------------
 
-Capability: basic
-Architectures: x86
-Type: vcpu ioctl
-Parameters: struct kvm_cpuid (in)
-Returns: 0 on success, -1 on error
+:Capability:    basic
+:Architectures: x86
+:Type:          vcpu ioctl
+:Parameters:    struct kvm_cpuid (in)
+:Returns:       - 0 on success
+                - -1 on error
 
 Defines the vcpu responses to the cpuid instruction.  Applications
 should use the KVM_SET_CPUID2 ioctl if available.
@@ -681,11 +683,12 @@ should use the KVM_SET_CPUID2 ioctl if available.
 4.21 KVM_SET_SIGNAL_MASK
 --------------------------------------------------------------------------------
 
-Capability: basic
-Architectures: all
-Type: vcpu ioctl
-Parameters: struct kvm_signal_mask (in)
-Returns: 0 on success, -1 on error
+:Capability:    basic
+:Architectures: all
+:Type:          vcpu ioctl
+:Parameters:    struct kvm_signal_mask (in)
+:Returns:       - 0 on success
+                - -1 on error
 
 Defines which signals are blocked during execution of KVM_RUN.  This
 signal mask temporarily overrides the threads signal mask.  Any
@@ -707,11 +710,12 @@ signal mask.
 4.22 KVM_GET_FPU
 --------------------------------------------------------------------------------
 
-Capability: basic
-Architectures: x86
-Type: vcpu ioctl
-Parameters: struct kvm_fpu (out)
-Returns: 0 on success, -1 on error
+:Capability:    basic
+:Architectures: x86
+:Type:          vcpu ioctl
+:Parameters:    struct kvm_fpu (out)
+:Returns:       - 0 on success
+                - -1 on error
 
 Reads the floating point state from the vcpu.
 
@@ -736,11 +740,12 @@ Reads the floating point state from the vcpu.
 4.23 KVM_SET_FPU
 --------------------------------------------------------------------------------
 
-Capability: basic
-Architectures: x86
-Type: vcpu ioctl
-Parameters: struct kvm_fpu (in)
-Returns: 0 on success, -1 on error
+:Capability:    basic
+:Architectures: x86
+:Type:          vcpu ioctl
+:Parameters:    struct kvm_fpu (in)
+:Returns:       - 0 on success
+                - -1 on error
 
 Writes the floating point state to the vcpu.
 
@@ -765,11 +770,12 @@ Writes the floating point state to the vcpu.
 4.24 KVM_CREATE_IRQCHIP
 --------------------------------------------------------------------------------
 
-Capability: KVM_CAP_IRQCHIP, KVM_CAP_S390_IRQCHIP (s390)
-Architectures: x86, ARM, arm64, s390
-Type: vm ioctl
-Parameters: none
-Returns: 0 on success, -1 on error
+:Capability:    KVM_CAP_IRQCHIP, KVM_CAP_S390_IRQCHIP (s390)
+:Architectures: x86, ARM, arm64, s390
+:Type:          vm ioctl
+:Parameters:    none
+:Returns:       - 0 on success
+                - -1 on error
 
 Creates an interrupt controller model in the kernel.
 On x86, creates a virtual ioapic, a virtual PIC (two PICs, nested), and sets up
