@@ -1,0 +1,474 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>5. The kvm_run structure &#8212; Linux KVM  documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6. Capabilities that can be enabled on vCPUs" href="6.html" />
+    <link rel="prev" title="4. API description" href="4.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="6.html" title="6. Capabilities that can be enabled on vCPUs"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="4.html" title="4. API description"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Linux KVM  documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="the-kvm-run-structure">
+<h1>5. The kvm_run structure<a class="headerlink" href="#the-kvm-run-structure" title="Permalink to this headline">¶</a></h1>
+<p>Application code obtains a pointer to the kvm_run structure by
+mmap()ing a vcpu fd.  From that point, application code can control
+execution by changing fields in kvm_run prior to calling the KVM_RUN
+ioctl, and obtain information about the reason KVM_RUN returned by
+looking up structure members.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">kvm_run</span> <span class="p">{</span>
+        <span class="cm">/* in */</span>
+        <span class="n">__u8</span> <span class="n">request_interrupt_window</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Request that KVM_RUN return when it becomes possible to inject external
+interrupts into the guest.  Useful in conjunction with KVM_INTERRUPT.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">__u8</span> <span class="n">immediate_exit</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>This field is polled once when KVM_RUN starts; if non-zero, KVM_RUN
+exits immediately, returning -EINTR.  In the common scenario where a
+signal is used to “kick” a VCPU out of KVM_RUN, this field can be used
+to avoid usage of KVM_SET_SIGNAL_MASK, which has worse scalability.
+Rather than blocking the signal outside KVM_RUN, userspace can set up
+a signal handler that sets run-&gt;immediate_exit to a non-zero value.</p>
+<p>This field is ignored if KVM_CAP_IMMEDIATE_EXIT is not available.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">__u8</span> <span class="n">padding1</span><span class="p">[</span><span class="mi">6</span><span class="p">];</span>
+
+<span class="cm">/* out */</span>
+<span class="n">__u32</span> <span class="n">exit_reason</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>When KVM_RUN has returned successfully (return value 0), this informs
+application code why KVM_RUN has returned.  Allowable values for this
+field are detailed below.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">__u8</span> <span class="n">ready_for_interrupt_injection</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>If request_interrupt_window has been specified, this field indicates
+an interrupt can be injected now with KVM_INTERRUPT.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">__u8</span> <span class="n">if_flag</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The value of the current interrupt flag.  Only valid if in-kernel
+local APIC is not used.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">__u16</span> <span class="n">flags</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>More architecture-specific flags detailing state of the VCPU that may
+affect the device’s behavior.  The only currently defined flag is
+KVM_RUN_X86_SMM, which is valid on x86 machines and is set if the
+VCPU is in system management mode.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* in (pre_kvm_run), out (post_kvm_run) */</span>
+<span class="n">__u64</span> <span class="n">cr8</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The value of the cr8 register.  Only valid if in-kernel local APIC is
+not used.  Both input and output.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">__u64</span> <span class="n">apic_base</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>The value of the APIC BASE msr.  Only valid if in-kernel local
+APIC is not used.  Both input and output.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">union</span> <span class="p">{</span>
+        <span class="cm">/* KVM_EXIT_UNKNOWN */</span>
+        <span class="k">struct</span> <span class="p">{</span>
+                <span class="n">__u64</span> <span class="n">hardware_exit_reason</span><span class="p">;</span>
+        <span class="p">}</span> <span class="n">hw</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>If exit_reason is KVM_EXIT_UNKNOWN, the vcpu has exited due to unknown
+reasons.  Further architecture-specific information is available in
+hardware_exit_reason.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* KVM_EXIT_FAIL_ENTRY */</span>
+<span class="k">struct</span> <span class="p">{</span>
+        <span class="n">__u64</span> <span class="n">hardware_entry_failure_reason</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">fail_entry</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>If exit_reason is KVM_EXIT_FAIL_ENTRY, the vcpu could not be run due
+to unknown reasons.  Further architecture-specific information is
+available in hardware_entry_failure_reason.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* KVM_EXIT_EXCEPTION */</span>
+<span class="k">struct</span> <span class="p">{</span>
+        <span class="n">__u32</span> <span class="n">exception</span><span class="p">;</span>
+        <span class="n">__u32</span> <span class="n">error_code</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">ex</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Unused.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span>                <span class="cm">/* KVM_EXIT_IO */</span>
+                <span class="k">struct</span> <span class="p">{</span>
+<span class="cp">#define KVM_EXIT_IO_IN  0</span>
+<span class="cp">#define KVM_EXIT_IO_OUT 1</span>
+                        <span class="n">__u8</span> <span class="n">direction</span><span class="p">;</span>
+                        <span class="n">__u8</span> <span class="n">size</span><span class="p">;</span> <span class="cm">/* bytes */</span>
+                        <span class="n">__u16</span> <span class="n">port</span><span class="p">;</span>
+                        <span class="n">__u32</span> <span class="n">count</span><span class="p">;</span>
+                        <span class="n">__u64</span> <span class="n">data_offset</span><span class="p">;</span> <span class="cm">/* relative to kvm_run start */</span>
+                <span class="p">}</span> <span class="n">io</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>If exit_reason is KVM_EXIT_IO, then the vcpu has
+executed a port I/O instruction which could not be satisfied by kvm.
+data_offset describes where the data is located (KVM_EXIT_IO_OUT) or
+where kvm expects application code to place the data for the next
+KVM_RUN invocation (KVM_EXIT_IO_IN).  Data format is a packed array.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* KVM_EXIT_DEBUG */</span>
+<span class="k">struct</span> <span class="p">{</span>
+        <span class="k">struct</span> <span class="n">kvm_debug_exit_arch</span> <span class="n">arch</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">debug</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>If the exit_reason is KVM_EXIT_DEBUG, then a vcpu is processing a debug event
+for which architecture specific information is returned.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* KVM_EXIT_MMIO */</span>
+<span class="k">struct</span> <span class="p">{</span>
+        <span class="n">__u64</span> <span class="n">phys_addr</span><span class="p">;</span>
+        <span class="n">__u8</span>  <span class="n">data</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span>
+        <span class="n">__u32</span> <span class="n">len</span><span class="p">;</span>
+        <span class="n">__u8</span>  <span class="n">is_write</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">mmio</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>If exit_reason is KVM_EXIT_MMIO, then the vcpu has
+executed a memory-mapped I/O instruction which could not be satisfied
+by kvm.  The ‘data’ member contains the written data if ‘is_write’ is
+true, and should be filled by application code otherwise.</p>
+<p>The ‘data’ member contains, in its first ‘len’ bytes, the value as it would
+appear if the VCPU performed a load or store of the appropriate width directly
+to the byte array.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For KVM_EXIT_IO, KVM_EXIT_MMIO, KVM_EXIT_OSI, KVM_EXIT_PAPR and
+KVM_EXIT_EPR the corresponding</p>
+</div>
+<p>operations are complete (and guest state is consistent) only after userspace
+has re-entered the kernel with KVM_RUN.  The kernel side will first finish
+incomplete operations and then check for pending signals.  Userspace
+can re-enter the guest with an unmasked signal pending to complete
+pending operations.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* KVM_EXIT_HYPERCALL */</span>
+<span class="k">struct</span> <span class="p">{</span>
+        <span class="n">__u64</span> <span class="n">nr</span><span class="p">;</span>
+        <span class="n">__u64</span> <span class="n">args</span><span class="p">[</span><span class="mi">6</span><span class="p">];</span>
+        <span class="n">__u64</span> <span class="n">ret</span><span class="p">;</span>
+        <span class="n">__u32</span> <span class="n">longmode</span><span class="p">;</span>
+        <span class="n">__u32</span> <span class="n">pad</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">hypercall</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Unused.  This was once used for ‘hypercall to userspace’.  To implement
+such functionality, use KVM_EXIT_IO (x86) or KVM_EXIT_MMIO (all except s390).
+Note KVM_EXIT_IO is significantly faster than KVM_EXIT_MMIO.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* KVM_EXIT_TPR_ACCESS */</span>
+<span class="k">struct</span> <span class="p">{</span>
+        <span class="n">__u64</span> <span class="n">rip</span><span class="p">;</span>
+        <span class="n">__u32</span> <span class="n">is_write</span><span class="p">;</span>
+        <span class="n">__u32</span> <span class="n">pad</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">tpr_access</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>To be documented (KVM_TPR_ACCESS_REPORTING).</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* KVM_EXIT_S390_SIEIC */</span>
+<span class="k">struct</span> <span class="p">{</span>
+        <span class="n">__u8</span> <span class="n">icptcode</span><span class="p">;</span>
+        <span class="n">__u64</span> <span class="n">mask</span><span class="p">;</span> <span class="cm">/* psw upper half */</span>
+        <span class="n">__u64</span> <span class="n">addr</span><span class="p">;</span> <span class="cm">/* psw lower half */</span>
+        <span class="n">__u16</span> <span class="n">ipa</span><span class="p">;</span>
+        <span class="n">__u32</span> <span class="n">ipb</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">s390_sieic</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>s390 specific.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span>                <span class="cm">/* KVM_EXIT_S390_RESET */</span>
+<span class="cp">#define KVM_S390_RESET_POR       1</span>
+<span class="cp">#define KVM_S390_RESET_CLEAR     2</span>
+<span class="cp">#define KVM_S390_RESET_SUBSYSTEM 4</span>
+<span class="cp">#define KVM_S390_RESET_CPU_INIT  8</span>
+<span class="cp">#define KVM_S390_RESET_IPL       16</span>
+                <span class="n">__u64</span> <span class="n">s390_reset_flags</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>s390 specific.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* KVM_EXIT_S390_UCONTROL */</span>
+<span class="k">struct</span> <span class="p">{</span>
+        <span class="n">__u64</span> <span class="n">trans_exc_code</span><span class="p">;</span>
+        <span class="n">__u32</span> <span class="n">pgm_code</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">s390_ucontrol</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>s390 specific. A page fault has occurred for a user controlled virtual
+machine (KVM_VM_S390_UNCONTROL) on it’s host page table that cannot be
+resolved by the kernel.
+The program code and the translation exception code that were placed
+in the cpu’s lowcore are presented here as defined by the z Architecture
+Principles of Operation Book in the Chapter for Dynamic Address Translation
+(DAT)</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* KVM_EXIT_DCR */</span>
+<span class="k">struct</span> <span class="p">{</span>
+        <span class="n">__u32</span> <span class="n">dcrn</span><span class="p">;</span>
+        <span class="n">__u32</span> <span class="n">data</span><span class="p">;</span>
+        <span class="n">__u8</span>  <span class="n">is_write</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">dcr</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Deprecated - was used for 440 KVM.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* KVM_EXIT_OSI */</span>
+<span class="k">struct</span> <span class="p">{</span>
+        <span class="n">__u64</span> <span class="n">gprs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+<span class="p">}</span> <span class="n">osi</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>MOL uses a special hypercall interface it calls ‘OSI’. To enable it, we catch
+hypercalls and exit with this exit struct that contains all the guest gprs.</p>
+<p>If exit_reason is KVM_EXIT_OSI, then the vcpu has triggered such a hypercall.
+Userspace can now handle the hypercall and when it’s done modify the gprs as
+necessary. Upon guest entry all guest GPRs will then be replaced by the values
+in this struct.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* KVM_EXIT_PAPR_HCALL */</span>
+<span class="k">struct</span> <span class="p">{</span>
+        <span class="n">__u64</span> <span class="n">nr</span><span class="p">;</span>
+        <span class="n">__u64</span> <span class="n">ret</span><span class="p">;</span>
+        <span class="n">__u64</span> <span class="n">args</span><span class="p">[</span><span class="mi">9</span><span class="p">];</span>
+<span class="p">}</span> <span class="n">papr_hcall</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>This is used on 64-bit PowerPC when emulating a pSeries partition,
+e.g. with the ‘pseries’ machine type in qemu.  It occurs when the
+guest does a hypercall using the ‘sc 1’ instruction.  The ‘nr’ field
+contains the hypercall number (from the guest R3), and ‘args’ contains
+the arguments (from the guest R4 - R12).  Userspace should put the
+return code in ‘ret’ and any extra returned values in args[].
+The possible hypercalls are defined in the Power Architecture Platform
+Requirements (PAPR) document available from www.power.org (free
+developer registration required to access it).</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* KVM_EXIT_S390_TSCH */</span>
+<span class="k">struct</span> <span class="p">{</span>
+        <span class="n">__u16</span> <span class="n">subchannel_id</span><span class="p">;</span>
+        <span class="n">__u16</span> <span class="n">subchannel_nr</span><span class="p">;</span>
+        <span class="n">__u32</span> <span class="n">io_int_parm</span><span class="p">;</span>
+        <span class="n">__u32</span> <span class="n">io_int_word</span><span class="p">;</span>
+        <span class="n">__u32</span> <span class="n">ipb</span><span class="p">;</span>
+        <span class="n">__u8</span> <span class="n">dequeued</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">s390_tsch</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>s390 specific. This exit occurs when KVM_CAP_S390_CSS_SUPPORT has been enabled
+and TEST SUBCHANNEL was intercepted. If dequeued is set, a pending I/O
+interrupt for the target subchannel has been dequeued and subchannel_id,
+subchannel_nr, io_int_parm and io_int_word contain the parameters for that
+interrupt. ipb is needed for instruction parameter decoding.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* KVM_EXIT_EPR */</span>
+<span class="k">struct</span> <span class="p">{</span>
+        <span class="n">__u32</span> <span class="n">epr</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">epr</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>On FSL BookE PowerPC chips, the interrupt controller has a fast patch
+interrupt acknowledge path to the core. When the core successfully
+delivers an interrupt, it automatically populates the EPR register with
+the interrupt vector number and acknowledges the interrupt inside
+the interrupt controller.</p>
+<p>In case the interrupt controller lives in user space, we need to do
+the interrupt acknowledge cycle through it to fetch the next to be
+delivered interrupt vector using this exit.</p>
+<p>It gets triggered whenever both KVM_CAP_PPC_EPR are enabled and an
+external interrupt has just been delivered into the guest. User space
+should put the acknowledged interrupt vector into the ‘epr’ field.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span>                <span class="cm">/* KVM_EXIT_SYSTEM_EVENT */</span>
+                <span class="k">struct</span> <span class="p">{</span>
+<span class="cp">#define KVM_SYSTEM_EVENT_SHUTDOWN       1</span>
+<span class="cp">#define KVM_SYSTEM_EVENT_RESET          2</span>
+<span class="cp">#define KVM_SYSTEM_EVENT_CRASH          3</span>
+                        <span class="n">__u32</span> <span class="n">type</span><span class="p">;</span>
+                        <span class="n">__u64</span> <span class="n">flags</span><span class="p">;</span>
+                <span class="p">}</span> <span class="n">system_event</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>If exit_reason is KVM_EXIT_SYSTEM_EVENT then the vcpu has triggered
+a system-level event using some architecture specific mechanism (hypercall
+or some special instruction). In case of ARM/ARM64, this is triggered using
+HVC instruction based PSCI call from the vcpu. The ‘type’ field describes
+the system-level event type. The ‘flags’ field describes architecture
+specific flags for the system-level event.</p>
+<dl class="simple">
+<dt>Valid values for ‘type’ are:</dt><dd><dl class="simple">
+<dt>KVM_SYSTEM_EVENT_SHUTDOWN – the guest has requested a shutdown of the</dt><dd><p>VM. Userspace is not obliged to honour this, and if it does honour
+this does not need to destroy the VM synchronously (ie it may call
+KVM_RUN again before shutdown finally occurs).</p>
+</dd>
+<dt>KVM_SYSTEM_EVENT_RESET – the guest has requested a reset of the VM.</dt><dd><p>As with SHUTDOWN, userspace can choose to ignore the request, or
+to schedule the reset to occur in the future and may call KVM_RUN again.</p>
+</dd>
+<dt>KVM_SYSTEM_EVENT_CRASH – the guest crash occurred and the guest</dt><dd><p>has requested a crash condition maintenance. Userspace can choose
+to ignore the request, or to gather VM memory core dump and/or
+reset/shutdown of the VM.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* KVM_EXIT_IOAPIC_EOI */</span>
+<span class="k">struct</span> <span class="p">{</span>
+        <span class="n">__u8</span> <span class="n">vector</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">eoi</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Indicates that the VCPU’s in-kernel local APIC received an EOI for a
+level-triggered IOAPIC interrupt.  This exit only triggers when the
+IOAPIC is implemented in userspace (i.e. KVM_CAP_SPLIT_IRQCHIP is enabled);
+the userspace IOAPIC should process the EOI and retrigger the interrupt if
+it is still asserted.  Vector is the LAPIC interrupt vector for which the
+EOI was received.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span>                <span class="k">struct</span> <span class="n">kvm_hyperv_exit</span> <span class="p">{</span>
+<span class="cp">#define KVM_EXIT_HYPERV_SYNIC          1</span>
+<span class="cp">#define KVM_EXIT_HYPERV_HCALL          2</span>
+                        <span class="n">__u32</span> <span class="n">type</span><span class="p">;</span>
+                        <span class="k">union</span> <span class="p">{</span>
+                                <span class="k">struct</span> <span class="p">{</span>
+                                        <span class="n">__u32</span> <span class="n">msr</span><span class="p">;</span>
+                                        <span class="n">__u64</span> <span class="n">control</span><span class="p">;</span>
+                                        <span class="n">__u64</span> <span class="n">evt_page</span><span class="p">;</span>
+                                        <span class="n">__u64</span> <span class="n">msg_page</span><span class="p">;</span>
+                                <span class="p">}</span> <span class="n">synic</span><span class="p">;</span>
+                                <span class="k">struct</span> <span class="p">{</span>
+                                        <span class="n">__u64</span> <span class="n">input</span><span class="p">;</span>
+                                        <span class="n">__u64</span> <span class="n">result</span><span class="p">;</span>
+                                        <span class="n">__u64</span> <span class="n">params</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+                                <span class="p">}</span> <span class="n">hcall</span><span class="p">;</span>
+                        <span class="p">}</span> <span class="n">u</span><span class="p">;</span>
+                <span class="p">};</span>
+                <span class="cm">/* KVM_EXIT_HYPERV */</span>
+                <span class="k">struct</span> <span class="n">kvm_hyperv_exit</span> <span class="n">hyperv</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Indicates that the VCPU exits into userspace to process some tasks
+related to Hyper-V emulation.
+Valid values for ‘type’ are:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">KVM_EXIT_HYPERV_SYNIC</span> <span class="o">--</span> <span class="n">synchronously</span> <span class="n">notify</span> <span class="n">user</span><span class="o">-</span><span class="n">space</span> <span class="n">about</span>
+</pre></div>
+</div>
+<p>Hyper-V SynIC state change. Notification is used to remap SynIC
+event/message pages and to enable/disable SynIC messages/events processing
+in userspace.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span>        <span class="cm">/* Fix the size of the union. */</span>
+        <span class="kt">char</span> <span class="n">padding</span><span class="p">[</span><span class="mi">256</span><span class="p">];</span>
+<span class="p">};</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * shared registers between kvm and userspace.</span>
+<span class="cm"> * kvm_valid_regs specifies the register classes set by the host</span>
+<span class="cm"> * kvm_dirty_regs specified the register classes dirtied by userspace</span>
+<span class="cm"> * struct kvm_sync_regs is architecture specific, as well as the</span>
+<span class="cm"> * bits for kvm_valid_regs and kvm_dirty_regs</span>
+<span class="cm"> */</span>
+<span class="n">__u64</span> <span class="n">kvm_valid_regs</span><span class="p">;</span>
+<span class="n">__u64</span> <span class="n">kvm_dirty_regs</span><span class="p">;</span>
+<span class="k">union</span> <span class="p">{</span>
+        <span class="k">struct</span> <span class="n">kvm_sync_regs</span> <span class="n">regs</span><span class="p">;</span>
+        <span class="kt">char</span> <span class="n">padding</span><span class="p">[</span><span class="n">SYNC_REGS_SIZE_BYTES</span><span class="p">];</span>
+<span class="p">}</span> <span class="n">s</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>If KVM_CAP_SYNC_REGS is defined, these fields allow userspace to access
+certain guest registers without having to call SET/GET_*REGS. Thus we can
+avoid some system call overhead if userspace has to handle the exit.
+Userspace can query the validity of the structure by checking
+kvm_valid_regs for specific bits. These bits are architecture specific
+and usually define the validity of a groups of registers. (e.g. one bit</p>
+<blockquote>
+<div><p>for general purpose registers)</p>
+</div></blockquote>
+<p>Please note that the kernel is allowed to use the kvm_run structure as the
+primary storage for certain register types. Therefore, the kernel may use the
+values in kvm_run even if the corresponding bit in kvm_dirty_regs is not set.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="p">};</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="4.html"
+                        title="previous chapter">4. API description</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="6.html"
+                        title="next chapter">6. Capabilities that can be enabled on vCPUs</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/5.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="6.html" title="6. Capabilities that can be enabled on vCPUs"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="4.html" title="4. API description"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Linux KVM  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Takumi Takahashi.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+    </div>
+  </body>
+</html>

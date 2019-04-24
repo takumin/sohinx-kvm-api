@@ -1,0 +1,126 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>1. General description &#8212; Linux KVM  documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="2. File descriptors" href="2.html" />
+    <link rel="prev" title="KVM API Documentation" href="../index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="2.html" title="2. File descriptors"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="KVM API Documentation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Linux KVM  documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="general-description">
+<h1>1. General description<a class="headerlink" href="#general-description" title="Permalink to this headline">¶</a></h1>
+<p>The kvm API is a set of ioctls that are issued to control various aspects
+of a virtual machine.  The ioctls belong to three classes:</p>
+<dl>
+<dt>System ioctls</dt><dd><p>These query and set global attributes which affect the
+whole kvm subsystem.  In addition a system ioctl is used to create
+virtual machines.</p>
+</dd>
+<dt>VM ioctls</dt><dd><p>These query and set attributes that affect an entire virtual
+machine, for example memory layout.  In addition a VM ioctl is used to
+create virtual cpus (vcpus) and devices.</p>
+<p>VM ioctls must be issued from the same process (address space) that was
+used to create the VM.</p>
+</dd>
+<dt>vcpu ioctls</dt><dd><p>These query and set attributes that control the operation
+of a single virtual cpu.</p>
+<p>vcpu ioctls should be issued from the same thread that was used to create
+the vcpu, except for asynchronous vcpu ioctl that are marked as such in
+the documentation.  Otherwise, the first ioctl after switching threads
+could see a performance impact.</p>
+</dd>
+<dt>device ioctls</dt><dd><p>These query and set attributes that control the operation
+of a single device.</p>
+<p>device ioctls must be issued from the same process (address space) that
+was used to create the VM.</p>
+</dd>
+</dl>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../index.html"
+                        title="previous chapter">KVM API Documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="2.html"
+                        title="next chapter">2. File descriptors</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/1.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="2.html" title="2. File descriptors"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="KVM API Documentation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Linux KVM  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Takumi Takahashi.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+    </div>
+  </body>
+</html>

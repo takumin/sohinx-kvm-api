@@ -1,0 +1,249 @@
+================================================================================
+6. Capabilities that can be enabled on vCPUs
+================================================================================
+
+There are certain capabilities that change the behavior of the virtual CPU or
+the virtual machine when enabled. To enable them, please see section 4.37.
+Below you can find a list of capabilities and what their effect on the vCPU or
+the virtual machine is when enabling them.
+
+The following information is provided along with the description:
+
+  Architectures: which instruction set architectures provide this ioctl.
+      x86 includes both i386 and x86_64.
+
+  Target: whether this is a per-vcpu or per-vm capability.
+
+  Parameters: what parameters are accepted by the capability.
+
+  Returns: the return value.  General error numbers (EBADF, ENOMEM, EINVAL)
+      are not detailed, but errors with specific meanings are.
+
+--------------------------------------------------------------------------------
+6.1 KVM_CAP_PPC_OSI
+--------------------------------------------------------------------------------
+
+Architectures: ppc
+Target: vcpu
+Parameters: none
+Returns: 0 on success; -1 on error
+
+This capability enables interception of OSI hypercalls that otherwise would
+be treated as normal system calls to be injected into the guest. OSI hypercalls
+were invented by Mac-on-Linux to have a standardized communication mechanism
+between the guest and the host.
+
+When this capability is enabled, KVM_EXIT_OSI can occur.
+
+--------------------------------------------------------------------------------
+6.2 KVM_CAP_PPC_PAPR
+--------------------------------------------------------------------------------
+
+Architectures: ppc
+Target: vcpu
+Parameters: none
+Returns: 0 on success; -1 on error
+
+This capability enables interception of PAPR hypercalls. PAPR hypercalls are
+done using the hypercall instruction "sc 1".
+
+It also sets the guest privilege level to "supervisor" mode. Usually the guest
+runs in "hypervisor" privilege mode with a few missing features.
+
+In addition to the above, it changes the semantics of SDR1. In this mode, the
+HTAB address part of SDR1 contains an HVA instead of a GPA, as PAPR keeps the
+HTAB invisible to the guest.
+
+When this capability is enabled, KVM_EXIT_PAPR_HCALL can occur.
+
+--------------------------------------------------------------------------------
+6.3 KVM_CAP_SW_TLB
+--------------------------------------------------------------------------------
+
+Architectures: ppc
+Target: vcpu
+Parameters: args[0] is the address of a struct kvm_config_tlb
+Returns: 0 on success; -1 on error
+
+.. code-block:: c
+
+   struct kvm_config_tlb {
+           __u64 params;
+           __u64 array;
+           __u32 mmu_type;
+           __u32 array_len;
+   };
+
+Configures the virtual CPU's TLB array, establishing a shared memory area
+between userspace and KVM.  The "params" and "array" fields are userspace
+addresses of mmu-type-specific data structures.  The "array_len" field is an
+safety mechanism, and should be set to the size in bytes of the memory that
+userspace has reserved for the array.  It must be at least the size dictated
+by "mmu_type" and "params".
+
+While KVM_RUN is active, the shared region is under control of KVM.  Its
+contents are undefined, and any modification by userspace results in
+boundedly undefined behavior.
+
+On return from KVM_RUN, the shared region will reflect the current state of
+the guest's TLB.  If userspace makes any changes, it must call KVM_DIRTY_TLB
+to tell KVM which entries have been changed, prior to calling KVM_RUN again
+on this vcpu.
+
+For mmu types KVM_MMU_FSL_BOOKE_NOHV and KVM_MMU_FSL_BOOKE_HV:
+ - The "params" field is of type "struct kvm_book3e_206_tlb_params".
+ - The "array" field points to an array of type "struct
+   kvm_book3e_206_tlb_entry".
+ - The array consists of all entries in the first TLB, followed by all
+   entries in the second TLB.
+ - Within a TLB, entries are ordered first by increasing set number.  Within a
+   set, entries are ordered by way (increasing ESEL).
+ - The hash for determining set number in TLB0 is: (MAS2 >> 12) & (num_sets - 1)
+   where "num_sets" is the tlb_sizes[] value divided by the tlb_ways[] value.
+ - The tsize field of mas1 shall be set to 4K on TLB0, even though the
+   hardware ignores this value for TLB0.
+
+--------------------------------------------------------------------------------
+6.4 KVM_CAP_S390_CSS_SUPPORT
+--------------------------------------------------------------------------------
+
+Architectures: s390
+Target: vcpu
+Parameters: none
+Returns: 0 on success; -1 on error
+
+This capability enables support for handling of channel I/O instructions.
+
+TEST PENDING INTERRUPTION and the interrupt portion of TEST SUBCHANNEL are
+handled in-kernel, while the other I/O instructions are passed to userspace.
+
+When this capability is enabled, KVM_EXIT_S390_TSCH will occur on TEST
+SUBCHANNEL intercepts.
+
+Note that even though this capability is enabled per-vcpu, the complete
+virtual machine is affected.
+
+--------------------------------------------------------------------------------
+6.5 KVM_CAP_PPC_EPR
+--------------------------------------------------------------------------------
+
+Architectures: ppc
+Target: vcpu
+Parameters: args[0] defines whether the proxy facility is active
+Returns: 0 on success; -1 on error
+
+This capability enables or disables the delivery of interrupts through the
+external proxy facility.
+
+When enabled (args[0] != 0), every time the guest gets an external interrupt
+delivered, it automatically exits into user space with a KVM_EXIT_EPR exit
+to receive the topmost interrupt vector.
+
+When disabled (args[0] == 0), behavior is as if this facility is unsupported.
+
+When this capability is enabled, KVM_EXIT_EPR can occur.
+
+--------------------------------------------------------------------------------
+6.6 KVM_CAP_IRQ_MPIC
+--------------------------------------------------------------------------------
+
+Architectures: ppc
+Parameters: args[0] is the MPIC device fd
+            args[1] is the MPIC CPU number for this vcpu
+
+This capability connects the vcpu to an in-kernel MPIC device.
+
+--------------------------------------------------------------------------------
+6.7 KVM_CAP_IRQ_XICS
+--------------------------------------------------------------------------------
+
+Architectures: ppc
+Target: vcpu
+Parameters: args[0] is the XICS device fd
+            args[1] is the XICS CPU number (server ID) for this vcpu
+
+This capability connects the vcpu to an in-kernel XICS device.
+
+--------------------------------------------------------------------------------
+6.8 KVM_CAP_S390_IRQCHIP
+--------------------------------------------------------------------------------
+
+Architectures: s390
+Target: vm
+Parameters: none
+
+This capability enables the in-kernel irqchip for s390. Please refer to
+"4.24 KVM_CREATE_IRQCHIP" for details.
+
+--------------------------------------------------------------------------------
+6.9 KVM_CAP_MIPS_FPU
+--------------------------------------------------------------------------------
+
+Architectures: mips
+Target: vcpu
+Parameters: args[0] is reserved for future use (should be 0).
+
+This capability allows the use of the host Floating Point Unit by the guest. It
+allows the Config1.FP bit to be set to enable the FPU in the guest. Once this is
+done the KVM_REG_MIPS_FPR_* and KVM_REG_MIPS_FCR_* registers can be accessed
+(depending on the current guest FPU register mode), and the Status.FR,
+Config5.FRE bits are accessible via the KVM API and also from the guest,
+depending on them being supported by the FPU.
+
+--------------------------------------------------------------------------------
+6.10 KVM_CAP_MIPS_MSA
+--------------------------------------------------------------------------------
+
+Architectures: mips
+Target: vcpu
+Parameters: args[0] is reserved for future use (should be 0).
+
+This capability allows the use of the MIPS SIMD Architecture (MSA) by the guest.
+It allows the Config3.MSAP bit to be set to enable the use of MSA by the guest.
+Once this is done the KVM_REG_MIPS_VEC_* and KVM_REG_MIPS_MSA_* registers can be
+accessed, and the Config5.MSAEn bit is accessible via the KVM API and also from
+the guest.
+
+--------------------------------------------------------------------------------
+6.74 KVM_CAP_SYNC_REGS
+--------------------------------------------------------------------------------
+Architectures: s390, x86
+Target: s390: always enabled, x86: vcpu
+Parameters: none
+Returns: x86: KVM_CHECK_EXTENSION returns a bit-array indicating which register
+sets are supported (bitfields defined in arch/x86/include/uapi/asm/kvm.h).
+
+As described above in the kvm_sync_regs struct info in section 5 (kvm_run):
+KVM_CAP_SYNC_REGS "allow[s] userspace to access certain guest registers
+without having to call SET/GET_*REGS". This reduces overhead by eliminating
+repeated ioctl calls for setting and/or getting register values. This is
+particularly important when userspace is making synchronous guest state
+modifications, e.g. when emulating and/or intercepting instructions in
+userspace.
+
+For s390 specifics, please refer to the source code.
+
+For x86:
+- the register sets to be copied out to kvm_run are selectable
+  by userspace (rather that all sets being copied out for every exit).
+- vcpu_events are available in addition to regs and sregs.
+
+For x86, the 'kvm_valid_regs' field of struct kvm_run is overloaded to
+function as an input bit-array field set by userspace to indicate the
+specific register sets to be copied out on the next exit.
+
+To indicate when userspace has modified values that should be copied into
+the vCPU, the all architecture bitarray field, 'kvm_dirty_regs' must be set.
+This is done using the same bitflags as for the 'kvm_valid_regs' field.
+If the dirty bit is not set, then the register set values will not be copied
+into the vCPU even if they've been modified.
+
+Unused bitfields in the bitarrays must be set to zero.
+
+.. code-block:: c
+
+   struct kvm_sync_regs {
+           struct kvm_regs regs;
+           struct kvm_sregs sregs;
+           struct kvm_vcpu_events events;
+   };

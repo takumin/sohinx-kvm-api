@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>2. File descriptors &#8212; Linux KVM  documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3. Extensions" href="3.html" />
+    <link rel="prev" title="1. General description" href="1.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="3.html" title="3. Extensions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1.html" title="1. General description"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Linux KVM  documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="file-descriptors">
+<h1>2. File descriptors<a class="headerlink" href="#file-descriptors" title="Permalink to this headline">¶</a></h1>
+<p>The kvm API is centered around file descriptors.  An initial
+open(“/dev/kvm”) obtains a handle to the kvm subsystem; this handle
+can be used to issue system ioctls.  A KVM_CREATE_VM ioctl on this
+handle will create a VM file descriptor which can be used to issue VM
+ioctls.  A KVM_CREATE_VCPU or KVM_CREATE_DEVICE ioctl on a VM fd will
+create a virtual cpu or device and return a file descriptor pointing to
+the new resource.  Finally, ioctls on a vcpu or device fd can be used
+to control the vcpu or device.  For vcpus, this includes the important
+task of actually running guest code.</p>
+<p>In general file descriptors can be migrated among processes by means
+of fork() and the SCM_RIGHTS facility of unix domain socket.  These
+kinds of tricks are explicitly not supported by kvm.  While they will
+not cause harm to the host, their actual behavior is not guaranteed by
+the API.  See “General description” for details on the ioctl usage
+model that is supported by KVM.</p>
+<p>It is important to note that althought VM ioctls may only be issued from
+the process that created the VM, a VM’s lifecycle is associated with its
+file descriptor, not its creator (process).  In other words, the VM and
+its resources, <em>including the associated address space</em>, are not freed
+until the last reference to the VM’s file descriptor has been released.
+For example, if fork() is issued after ioctl(KVM_CREATE_VM), the VM will
+not be freed until both the parent (original) process and its child have
+put their references to the VM’s file descriptor.</p>
+<p>Because a VM’s resources are not freed until the last reference to its
+file descriptor is released, creating additional references to a VM via
+via fork(), dup(), etc… without careful consideration is strongly
+discouraged and may have unwanted side effects, e.g. memory allocated
+by and on behalf of the VM’s process may not be freed/unaccounted when
+the VM is shut down.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="1.html"
+                        title="previous chapter">1. General description</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="3.html"
+                        title="next chapter">3. Extensions</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/2.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="3.html" title="3. Extensions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1.html" title="1. General description"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Linux KVM  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Takumi Takahashi.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+    </div>
+  </body>
+</html>

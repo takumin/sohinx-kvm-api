@@ -1,0 +1,416 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>7. Capabilities that can be enabled on VMs &#8212; Linux KVM  documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="8. Other capabilities." href="8.html" />
+    <link rel="prev" title="6. Capabilities that can be enabled on vCPUs" href="6.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="8.html" title="8. Other capabilities."
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="6.html" title="6. Capabilities that can be enabled on vCPUs"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Linux KVM  documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="capabilities-that-can-be-enabled-on-vms">
+<h1>7. Capabilities that can be enabled on VMs<a class="headerlink" href="#capabilities-that-can-be-enabled-on-vms" title="Permalink to this headline">¶</a></h1>
+<p>There are certain capabilities that change the behavior of the virtual
+machine when enabled. To enable them, please see section 4.37. Below
+you can find a list of capabilities and what their effect on the VM
+is when enabling them.</p>
+<p>The following information is provided along with the description:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Architectures: which instruction set architectures provide this ioctl.</dt><dd><p>x86 includes both i386 and x86_64.</p>
+</dd>
+</dl>
+<p>Parameters: what parameters are accepted by the capability.</p>
+<dl class="simple">
+<dt>Returns: the return value.  General error numbers (EBADF, ENOMEM, EINVAL)</dt><dd><p>are not detailed, but errors with specific meanings are.</p>
+</dd>
+</dl>
+</div></blockquote>
+<div class="section" id="kvm-cap-ppc-enable-hcall">
+<h2>7.1 KVM_CAP_PPC_ENABLE_HCALL<a class="headerlink" href="#kvm-cap-ppc-enable-hcall" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: ppc
+Parameters: args[0] is the sPAPR hcall number</p>
+<blockquote>
+<div><p>args[1] is 0 to disable, 1 to enable in-kernel handling</p>
+</div></blockquote>
+<p>This capability controls whether individual sPAPR hypercalls (hcalls)
+get handled by the kernel or not.  Enabling or disabling in-kernel
+handling of an hcall is effective across the VM.  On creation, an
+initial set of hcalls are enabled for in-kernel handling, which
+consists of those hcalls for which in-kernel handlers were implemented
+before this capability was implemented.  If disabled, the kernel will
+not to attempt to handle the hcall, but will always exit to userspace
+to handle it.  Note that it may not make sense to enable some and
+disable others of a group of related hcalls, but KVM does not prevent
+userspace from doing that.</p>
+<p>If the hcall number specified is not one that has an in-kernel
+implementation, the KVM_ENABLE_CAP ioctl will fail with an EINVAL
+error.</p>
+</div>
+<div class="section" id="kvm-cap-s390-user-sigp">
+<h2>7.2 KVM_CAP_S390_USER_SIGP<a class="headerlink" href="#kvm-cap-s390-user-sigp" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: s390
+Parameters: none</p>
+<p>This capability controls which SIGP orders will be handled completely in user
+space. With this capability enabled, all fast orders will be handled completely
+in the kernel:
+- SENSE
+- SENSE RUNNING
+- EXTERNAL CALL
+- EMERGENCY SIGNAL
+- CONDITIONAL EMERGENCY SIGNAL</p>
+<p>All other orders will be handled completely in user space.</p>
+<p>Only privileged operation exceptions will be checked for in the kernel (or even
+in the hardware prior to interception). If this capability is not enabled, the
+old way of handling SIGP orders is used (partially in kernel and user space).</p>
+</div>
+<div class="section" id="kvm-cap-s390-vector-registers">
+<h2>7.3 KVM_CAP_S390_VECTOR_REGISTERS<a class="headerlink" href="#kvm-cap-s390-vector-registers" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: s390
+Parameters: none
+Returns: 0 on success, negative value on error</p>
+<p>Allows use of the vector registers introduced with z13 processor, and
+provides for the synchronization between host and user space.  Will
+return -EINVAL if the machine does not support vectors.</p>
+</div>
+<div class="section" id="kvm-cap-s390-user-stsi">
+<h2>7.4 KVM_CAP_S390_USER_STSI<a class="headerlink" href="#kvm-cap-s390-user-stsi" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: s390
+Parameters: none</p>
+<p>This capability allows post-handlers for the STSI instruction. After
+initial handling in the kernel, KVM exits to user space with
+KVM_EXIT_S390_STSI to allow user space to insert further data.</p>
+<p>Before exiting to userspace, kvm handlers should fill in s390_stsi field of
+vcpu-&gt;run:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="p">{</span>
+        <span class="n">__u64</span> <span class="n">addr</span><span class="p">;</span>
+        <span class="n">__u8</span> <span class="n">ar</span><span class="p">;</span>
+        <span class="n">__u8</span> <span class="n">reserved</span><span class="p">;</span>
+        <span class="n">__u8</span> <span class="n">fc</span><span class="p">;</span>
+        <span class="n">__u8</span> <span class="n">sel1</span><span class="p">;</span>
+        <span class="n">__u16</span> <span class="n">sel2</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">s390_stsi</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>&#64;addr - guest address of STSI SYSIB
+&#64;fc   - function code
+&#64;sel1 - selector 1
+&#64;sel2 - selector 2
+&#64;ar   - access register number</p>
+<p>KVM handlers should exit to userspace with rc = -EREMOTE.</p>
+</div>
+<div class="section" id="kvm-cap-split-irqchip">
+<h2>7.5 KVM_CAP_SPLIT_IRQCHIP<a class="headerlink" href="#kvm-cap-split-irqchip" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: x86
+Parameters: args[0] - number of routes reserved for userspace IOAPICs
+Returns: 0 on success, -1 on error</p>
+<p>Create a local apic for each processor in the kernel. This can be used
+instead of KVM_CREATE_IRQCHIP if the userspace VMM wishes to emulate the
+IOAPIC and PIC (and also the PIT, even though this has to be enabled
+separately).</p>
+<p>This capability also enables in kernel routing of interrupt requests;
+when KVM_CAP_SPLIT_IRQCHIP only routes of KVM_IRQ_ROUTING_MSI type are
+used in the IRQ routing table.  The first args[0] MSI routes are reserved
+for the IOAPIC pins.  Whenever the LAPIC receives an EOI for these routes,
+a KVM_EXIT_IOAPIC_EOI vmexit will be reported to userspace.</p>
+<p>Fails if VCPU has already been created, or if the irqchip is already in the
+kernel (i.e. KVM_CREATE_IRQCHIP has already been called).</p>
+</div>
+<div class="section" id="kvm-cap-s390-ri">
+<h2>7.6 KVM_CAP_S390_RI<a class="headerlink" href="#kvm-cap-s390-ri" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: s390
+Parameters: none</p>
+<p>Allows use of runtime-instrumentation introduced with zEC12 processor.
+Will return -EINVAL if the machine does not support runtime-instrumentation.
+Will return -EBUSY if a VCPU has already been created.</p>
+</div>
+<div class="section" id="kvm-cap-x2apic-api">
+<h2>7.7 KVM_CAP_X2APIC_API<a class="headerlink" href="#kvm-cap-x2apic-api" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: x86
+Parameters: args[0] - features that should be enabled
+Returns: 0 on success, -EINVAL when args[0] contains invalid features</p>
+<p>Valid feature flags in args[0] are</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#define KVM_X2APIC_API_USE_32BIT_IDS            (1ULL &lt;&lt; 0)</span>
+<span class="cp">#define KVM_X2APIC_API_DISABLE_BROADCAST_QUIRK  (1ULL &lt;&lt; 1)</span>
+</pre></div>
+</div>
+<p>Enabling KVM_X2APIC_API_USE_32BIT_IDS changes the behavior of
+KVM_SET_GSI_ROUTING, KVM_SIGNAL_MSI, KVM_SET_LAPIC, and KVM_GET_LAPIC,
+allowing the use of 32-bit APIC IDs.  See KVM_CAP_X2APIC_API in their
+respective sections.</p>
+<p>KVM_X2APIC_API_DISABLE_BROADCAST_QUIRK must be enabled for x2APIC to work
+in logical mode or with more than 255 VCPUs.  Otherwise, KVM treats 0xff
+as a broadcast even in x2APIC mode in order to support physical x2APIC
+without interrupt remapping.  This is undesirable in logical mode,
+where 0xff represents CPUs 0-7 in cluster 0.</p>
+</div>
+<div class="section" id="kvm-cap-s390-user-instr0">
+<h2>7.8 KVM_CAP_S390_USER_INSTR0<a class="headerlink" href="#kvm-cap-s390-user-instr0" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: s390
+Parameters: none</p>
+<p>With this capability enabled, all illegal instructions 0x0000 (2 bytes) will
+be intercepted and forwarded to user space. User space can use this
+mechanism e.g. to realize 2-byte software breakpoints. The kernel will
+not inject an operating exception for these instructions, user space has
+to take care of that.</p>
+<p>This capability can be enabled dynamically even if VCPUs were already
+created and are running.</p>
+</div>
+<div class="section" id="kvm-cap-s390-gs">
+<h2>7.9 KVM_CAP_S390_GS<a class="headerlink" href="#kvm-cap-s390-gs" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: s390
+Parameters: none
+Returns: 0 on success; -EINVAL if the machine does not support</p>
+<blockquote>
+<div><p>guarded storage; -EBUSY if a VCPU has already been created.</p>
+</div></blockquote>
+<p>Allows use of guarded storage for the KVM guest.</p>
+</div>
+<div class="section" id="kvm-cap-s390-ais">
+<h2>7.10 KVM_CAP_S390_AIS<a class="headerlink" href="#kvm-cap-s390-ais" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: s390
+Parameters: none</p>
+<p>Allow use of adapter-interruption suppression.
+Returns: 0 on success; -EBUSY if a VCPU has already been created.</p>
+</div>
+<div class="section" id="kvm-cap-ppc-smt">
+<h2>7.11 KVM_CAP_PPC_SMT<a class="headerlink" href="#kvm-cap-ppc-smt" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: ppc
+Parameters: vsmt_mode, flags</p>
+<p>Enabling this capability on a VM provides userspace with a way to set
+the desired virtual SMT mode (i.e. the number of virtual CPUs per
+virtual core).  The virtual SMT mode, vsmt_mode, must be a power of 2
+between 1 and 8.  On POWER8, vsmt_mode must also be no greater than
+the number of threads per subcore for the host.  Currently flags must
+be 0.  A successful call to enable this capability will result in
+vsmt_mode being returned when the KVM_CAP_PPC_SMT capability is
+subsequently queried for the VM.  This capability is only supported by
+HV KVM, and can only be set before any VCPUs have been created.
+The KVM_CAP_PPC_SMT_POSSIBLE capability indicates which virtual SMT
+modes are available.</p>
+</div>
+<div class="section" id="kvm-cap-ppc-fwnmi">
+<h2>7.12 KVM_CAP_PPC_FWNMI<a class="headerlink" href="#kvm-cap-ppc-fwnmi" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: ppc
+Parameters: none</p>
+<p>With this capability a machine check exception in the guest address
+space will cause KVM to exit the guest with NMI exit reason. This
+enables QEMU to build error log and branch to guest kernel registered
+machine check handling routine. Without this capability KVM will
+branch to guests’ 0x200 interrupt vector.</p>
+</div>
+<div class="section" id="kvm-cap-x86-disable-exits">
+<h2>7.13 KVM_CAP_X86_DISABLE_EXITS<a class="headerlink" href="#kvm-cap-x86-disable-exits" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: x86
+Parameters: args[0] defines which exits are disabled
+Returns: 0 on success, -EINVAL when args[0] contains invalid exits</p>
+<p>Valid bits in args[0] are</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#define KVM_X86_DISABLE_EXITS_MWAIT            (1 &lt;&lt; 0)</span>
+<span class="cp">#define KVM_X86_DISABLE_EXITS_HLT              (1 &lt;&lt; 1)</span>
+</pre></div>
+</div>
+<p>Enabling this capability on a VM provides userspace with a way to no
+longer intercept some instructions for improved latency in some
+workloads, and is suggested when vCPUs are associated to dedicated
+physical CPUs.  More bits can be added in the future; userspace can
+just pass the KVM_CHECK_EXTENSION result to KVM_ENABLE_CAP to disable
+all such vmexits.</p>
+<p>Do not enable KVM_FEATURE_PV_UNHALT if you disable HLT exits.</p>
+</div>
+<div class="section" id="kvm-cap-s390-hpage-1m">
+<h2>7.14 KVM_CAP_S390_HPAGE_1M<a class="headerlink" href="#kvm-cap-s390-hpage-1m" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: s390
+Parameters: none
+Returns: 0 on success, -EINVAL if hpage module parameter was not set</p>
+<blockquote>
+<div><p>or cmma is enabled, or the VM has the KVM_VM_S390_UCONTROL
+flag set</p>
+</div></blockquote>
+<p>With this capability the KVM support for memory backing with 1m pages
+through hugetlbfs can be enabled for a VM. After the capability is
+enabled, cmma can’t be enabled anymore and pfmfi and the storage key
+interpretation are disabled. If cmma has already been enabled or the
+hpage module parameter is not set to 1, -EINVAL is returned.</p>
+<p>While it is generally possible to create a huge page backed VM without
+this capability, the VM will not be able to run.</p>
+</div>
+<div class="section" id="kvm-cap-msr-platform-info">
+<h2>7.15 KVM_CAP_MSR_PLATFORM_INFO<a class="headerlink" href="#kvm-cap-msr-platform-info" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: x86
+Parameters: args[0] whether feature should be enabled or not</p>
+<p>With this capability, a guest may read the MSR_PLATFORM_INFO MSR. Otherwise,
+a #GP would be raised when the guest tries to access. Currently, this
+capability does not enable write permissions of this MSR for the guest.</p>
+</div>
+<div class="section" id="kvm-cap-ppc-nested-hv">
+<h2>7.16 KVM_CAP_PPC_NESTED_HV<a class="headerlink" href="#kvm-cap-ppc-nested-hv" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: ppc
+Parameters: none
+Returns: 0 on success, -EINVAL when the implementation doesn’t support</p>
+<blockquote>
+<div><p>nested-HV virtualization.</p>
+</div></blockquote>
+<p>HV-KVM on POWER9 and later systems allows for “nested-HV”
+virtualization, which provides a way for a guest VM to run guests that
+can run using the CPU’s supervisor mode (privileged non-hypervisor
+state).  Enabling this capability on a VM depends on the CPU having
+the necessary functionality and on the facility being enabled with a
+kvm-hv module parameter.</p>
+</div>
+<div class="section" id="kvm-cap-exception-payload">
+<h2>7.17 KVM_CAP_EXCEPTION_PAYLOAD<a class="headerlink" href="#kvm-cap-exception-payload" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: x86
+Parameters: args[0] whether feature should be enabled or not</p>
+<p>With this capability enabled, CR2 will not be modified prior to the
+emulated VM-exit when L1 intercepts a #PF exception that occurs in
+L2. Similarly, for kvm-intel only, DR6 will not be modified prior to
+the emulated VM-exit when L1 intercepts a #DB exception that occurs in
+L2. As a result, when KVM_GET_VCPU_EVENTS reports a pending #PF (or
+#DB) exception for L2, exception.has_payload will be set and the
+faulting address (or the new DR6 bits*) will be reported in the
+exception_payload field. Similarly, when userspace injects a #PF (or
+#DB) into L2 using KVM_SET_VCPU_EVENTS, it is expected to set
+exception.has_payload and to put the faulting address (or the new DR6
+bits*) in the exception_payload field.</p>
+<p>This capability also enables exception.pending in struct
+kvm_vcpu_events, which allows userspace to distinguish between pending
+and injected exceptions.</p>
+<ul class="simple">
+<li><p>For the new DR6 bits, note that bit 16 is set iff the #DB exception
+will clear DR6.RTM.</p></li>
+</ul>
+</div>
+<div class="section" id="kvm-cap-manual-dirty-log-protect">
+<h2>7.18 KVM_CAP_MANUAL_DIRTY_LOG_PROTECT<a class="headerlink" href="#kvm-cap-manual-dirty-log-protect" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: all
+Parameters: args[0] whether feature should be enabled or not</p>
+<p>With this capability enabled, KVM_GET_DIRTY_LOG will not automatically
+clear and write-protect all pages that are returned as dirty.
+Rather, userspace will have to do this operation separately using
+KVM_CLEAR_DIRTY_LOG.</p>
+<p>At the cost of a slightly more complicated operation, this provides better
+scalability and responsiveness for two reasons.  First,
+KVM_CLEAR_DIRTY_LOG ioctl can operate on a 64-page granularity rather
+than requiring to sync a full memslot; this ensures that KVM does not
+take spinlocks for an extended period of time.  Second, in some cases a
+large amount of time can pass between a call to KVM_GET_DIRTY_LOG and
+userspace actually using the data in the page.  Pages can be modified
+during this time, which is inefficint for both the guest and userspace:
+the guest will incur a higher penalty due to write protection faults,
+while userspace can see false reports of dirty pages.  Manual reprotection
+helps reducing this time, improving guest performance and reducing the
+number of dirty log false positives.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">7. Capabilities that can be enabled on VMs</a><ul>
+<li><a class="reference internal" href="#kvm-cap-ppc-enable-hcall">7.1 KVM_CAP_PPC_ENABLE_HCALL</a></li>
+<li><a class="reference internal" href="#kvm-cap-s390-user-sigp">7.2 KVM_CAP_S390_USER_SIGP</a></li>
+<li><a class="reference internal" href="#kvm-cap-s390-vector-registers">7.3 KVM_CAP_S390_VECTOR_REGISTERS</a></li>
+<li><a class="reference internal" href="#kvm-cap-s390-user-stsi">7.4 KVM_CAP_S390_USER_STSI</a></li>
+<li><a class="reference internal" href="#kvm-cap-split-irqchip">7.5 KVM_CAP_SPLIT_IRQCHIP</a></li>
+<li><a class="reference internal" href="#kvm-cap-s390-ri">7.6 KVM_CAP_S390_RI</a></li>
+<li><a class="reference internal" href="#kvm-cap-x2apic-api">7.7 KVM_CAP_X2APIC_API</a></li>
+<li><a class="reference internal" href="#kvm-cap-s390-user-instr0">7.8 KVM_CAP_S390_USER_INSTR0</a></li>
+<li><a class="reference internal" href="#kvm-cap-s390-gs">7.9 KVM_CAP_S390_GS</a></li>
+<li><a class="reference internal" href="#kvm-cap-s390-ais">7.10 KVM_CAP_S390_AIS</a></li>
+<li><a class="reference internal" href="#kvm-cap-ppc-smt">7.11 KVM_CAP_PPC_SMT</a></li>
+<li><a class="reference internal" href="#kvm-cap-ppc-fwnmi">7.12 KVM_CAP_PPC_FWNMI</a></li>
+<li><a class="reference internal" href="#kvm-cap-x86-disable-exits">7.13 KVM_CAP_X86_DISABLE_EXITS</a></li>
+<li><a class="reference internal" href="#kvm-cap-s390-hpage-1m">7.14 KVM_CAP_S390_HPAGE_1M</a></li>
+<li><a class="reference internal" href="#kvm-cap-msr-platform-info">7.15 KVM_CAP_MSR_PLATFORM_INFO</a></li>
+<li><a class="reference internal" href="#kvm-cap-ppc-nested-hv">7.16 KVM_CAP_PPC_NESTED_HV</a></li>
+<li><a class="reference internal" href="#kvm-cap-exception-payload">7.17 KVM_CAP_EXCEPTION_PAYLOAD</a></li>
+<li><a class="reference internal" href="#kvm-cap-manual-dirty-log-protect">7.18 KVM_CAP_MANUAL_DIRTY_LOG_PROTECT</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="6.html"
+                        title="previous chapter">6. Capabilities that can be enabled on vCPUs</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="8.html"
+                        title="next chapter">8. Other capabilities.</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/7.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="8.html" title="8. Other capabilities."
+             >next</a> |</li>
+        <li class="right" >
+          <a href="6.html" title="6. Capabilities that can be enabled on vCPUs"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Linux KVM  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Takumi Takahashi.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+    </div>
+  </body>
+</html>

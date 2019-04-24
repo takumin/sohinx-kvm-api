@@ -1,0 +1,324 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>6. Capabilities that can be enabled on vCPUs &#8212; Linux KVM  documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="7. Capabilities that can be enabled on VMs" href="7.html" />
+    <link rel="prev" title="5. The kvm_run structure" href="5.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="7.html" title="7. Capabilities that can be enabled on VMs"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="5.html" title="5. The kvm_run structure"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Linux KVM  documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="capabilities-that-can-be-enabled-on-vcpus">
+<h1>6. Capabilities that can be enabled on vCPUs<a class="headerlink" href="#capabilities-that-can-be-enabled-on-vcpus" title="Permalink to this headline">¶</a></h1>
+<p>There are certain capabilities that change the behavior of the virtual CPU or
+the virtual machine when enabled. To enable them, please see section 4.37.
+Below you can find a list of capabilities and what their effect on the vCPU or
+the virtual machine is when enabling them.</p>
+<p>The following information is provided along with the description:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Architectures: which instruction set architectures provide this ioctl.</dt><dd><p>x86 includes both i386 and x86_64.</p>
+</dd>
+</dl>
+<p>Target: whether this is a per-vcpu or per-vm capability.</p>
+<p>Parameters: what parameters are accepted by the capability.</p>
+<dl class="simple">
+<dt>Returns: the return value.  General error numbers (EBADF, ENOMEM, EINVAL)</dt><dd><p>are not detailed, but errors with specific meanings are.</p>
+</dd>
+</dl>
+</div></blockquote>
+<div class="section" id="kvm-cap-ppc-osi">
+<h2>6.1 KVM_CAP_PPC_OSI<a class="headerlink" href="#kvm-cap-ppc-osi" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: ppc
+Target: vcpu
+Parameters: none
+Returns: 0 on success; -1 on error</p>
+<p>This capability enables interception of OSI hypercalls that otherwise would
+be treated as normal system calls to be injected into the guest. OSI hypercalls
+were invented by Mac-on-Linux to have a standardized communication mechanism
+between the guest and the host.</p>
+<p>When this capability is enabled, KVM_EXIT_OSI can occur.</p>
+</div>
+<div class="section" id="kvm-cap-ppc-papr">
+<h2>6.2 KVM_CAP_PPC_PAPR<a class="headerlink" href="#kvm-cap-ppc-papr" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: ppc
+Target: vcpu
+Parameters: none
+Returns: 0 on success; -1 on error</p>
+<p>This capability enables interception of PAPR hypercalls. PAPR hypercalls are
+done using the hypercall instruction “sc 1”.</p>
+<p>It also sets the guest privilege level to “supervisor” mode. Usually the guest
+runs in “hypervisor” privilege mode with a few missing features.</p>
+<p>In addition to the above, it changes the semantics of SDR1. In this mode, the
+HTAB address part of SDR1 contains an HVA instead of a GPA, as PAPR keeps the
+HTAB invisible to the guest.</p>
+<p>When this capability is enabled, KVM_EXIT_PAPR_HCALL can occur.</p>
+</div>
+<div class="section" id="kvm-cap-sw-tlb">
+<h2>6.3 KVM_CAP_SW_TLB<a class="headerlink" href="#kvm-cap-sw-tlb" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: ppc
+Target: vcpu
+Parameters: args[0] is the address of a struct kvm_config_tlb
+Returns: 0 on success; -1 on error</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">kvm_config_tlb</span> <span class="p">{</span>
+        <span class="n">__u64</span> <span class="n">params</span><span class="p">;</span>
+        <span class="n">__u64</span> <span class="n">array</span><span class="p">;</span>
+        <span class="n">__u32</span> <span class="n">mmu_type</span><span class="p">;</span>
+        <span class="n">__u32</span> <span class="n">array_len</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>Configures the virtual CPU’s TLB array, establishing a shared memory area
+between userspace and KVM.  The “params” and “array” fields are userspace
+addresses of mmu-type-specific data structures.  The “array_len” field is an
+safety mechanism, and should be set to the size in bytes of the memory that
+userspace has reserved for the array.  It must be at least the size dictated
+by “mmu_type” and “params”.</p>
+<p>While KVM_RUN is active, the shared region is under control of KVM.  Its
+contents are undefined, and any modification by userspace results in
+boundedly undefined behavior.</p>
+<p>On return from KVM_RUN, the shared region will reflect the current state of
+the guest’s TLB.  If userspace makes any changes, it must call KVM_DIRTY_TLB
+to tell KVM which entries have been changed, prior to calling KVM_RUN again
+on this vcpu.</p>
+<dl class="simple">
+<dt>For mmu types KVM_MMU_FSL_BOOKE_NOHV and KVM_MMU_FSL_BOOKE_HV:</dt><dd><ul class="simple">
+<li><p>The “params” field is of type “struct kvm_book3e_206_tlb_params”.</p></li>
+<li><p>The “array” field points to an array of type “struct
+kvm_book3e_206_tlb_entry”.</p></li>
+<li><p>The array consists of all entries in the first TLB, followed by all
+entries in the second TLB.</p></li>
+<li><p>Within a TLB, entries are ordered first by increasing set number.  Within a
+set, entries are ordered by way (increasing ESEL).</p></li>
+<li><p>The hash for determining set number in TLB0 is: (MAS2 &gt;&gt; 12) &amp; (num_sets - 1)
+where “num_sets” is the tlb_sizes[] value divided by the tlb_ways[] value.</p></li>
+<li><p>The tsize field of mas1 shall be set to 4K on TLB0, even though the
+hardware ignores this value for TLB0.</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="kvm-cap-s390-css-support">
+<h2>6.4 KVM_CAP_S390_CSS_SUPPORT<a class="headerlink" href="#kvm-cap-s390-css-support" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: s390
+Target: vcpu
+Parameters: none
+Returns: 0 on success; -1 on error</p>
+<p>This capability enables support for handling of channel I/O instructions.</p>
+<p>TEST PENDING INTERRUPTION and the interrupt portion of TEST SUBCHANNEL are
+handled in-kernel, while the other I/O instructions are passed to userspace.</p>
+<p>When this capability is enabled, KVM_EXIT_S390_TSCH will occur on TEST
+SUBCHANNEL intercepts.</p>
+<p>Note that even though this capability is enabled per-vcpu, the complete
+virtual machine is affected.</p>
+</div>
+<div class="section" id="kvm-cap-ppc-epr">
+<h2>6.5 KVM_CAP_PPC_EPR<a class="headerlink" href="#kvm-cap-ppc-epr" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: ppc
+Target: vcpu
+Parameters: args[0] defines whether the proxy facility is active
+Returns: 0 on success; -1 on error</p>
+<p>This capability enables or disables the delivery of interrupts through the
+external proxy facility.</p>
+<p>When enabled (args[0] != 0), every time the guest gets an external interrupt
+delivered, it automatically exits into user space with a KVM_EXIT_EPR exit
+to receive the topmost interrupt vector.</p>
+<p>When disabled (args[0] == 0), behavior is as if this facility is unsupported.</p>
+<p>When this capability is enabled, KVM_EXIT_EPR can occur.</p>
+</div>
+<div class="section" id="kvm-cap-irq-mpic">
+<h2>6.6 KVM_CAP_IRQ_MPIC<a class="headerlink" href="#kvm-cap-irq-mpic" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: ppc
+Parameters: args[0] is the MPIC device fd</p>
+<blockquote>
+<div><p>args[1] is the MPIC CPU number for this vcpu</p>
+</div></blockquote>
+<p>This capability connects the vcpu to an in-kernel MPIC device.</p>
+</div>
+<div class="section" id="kvm-cap-irq-xics">
+<h2>6.7 KVM_CAP_IRQ_XICS<a class="headerlink" href="#kvm-cap-irq-xics" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: ppc
+Target: vcpu
+Parameters: args[0] is the XICS device fd</p>
+<blockquote>
+<div><p>args[1] is the XICS CPU number (server ID) for this vcpu</p>
+</div></blockquote>
+<p>This capability connects the vcpu to an in-kernel XICS device.</p>
+</div>
+<div class="section" id="kvm-cap-s390-irqchip">
+<h2>6.8 KVM_CAP_S390_IRQCHIP<a class="headerlink" href="#kvm-cap-s390-irqchip" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: s390
+Target: vm
+Parameters: none</p>
+<p>This capability enables the in-kernel irqchip for s390. Please refer to
+“4.24 KVM_CREATE_IRQCHIP” for details.</p>
+</div>
+<div class="section" id="kvm-cap-mips-fpu">
+<h2>6.9 KVM_CAP_MIPS_FPU<a class="headerlink" href="#kvm-cap-mips-fpu" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: mips
+Target: vcpu
+Parameters: args[0] is reserved for future use (should be 0).</p>
+<p>This capability allows the use of the host Floating Point Unit by the guest. It
+allows the Config1.FP bit to be set to enable the FPU in the guest. Once this is
+done the KVM_REG_MIPS_FPR_* and KVM_REG_MIPS_FCR_* registers can be accessed
+(depending on the current guest FPU register mode), and the Status.FR,
+Config5.FRE bits are accessible via the KVM API and also from the guest,
+depending on them being supported by the FPU.</p>
+</div>
+<div class="section" id="kvm-cap-mips-msa">
+<h2>6.10 KVM_CAP_MIPS_MSA<a class="headerlink" href="#kvm-cap-mips-msa" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: mips
+Target: vcpu
+Parameters: args[0] is reserved for future use (should be 0).</p>
+<p>This capability allows the use of the MIPS SIMD Architecture (MSA) by the guest.
+It allows the Config3.MSAP bit to be set to enable the use of MSA by the guest.
+Once this is done the KVM_REG_MIPS_VEC_* and KVM_REG_MIPS_MSA_* registers can be
+accessed, and the Config5.MSAEn bit is accessible via the KVM API and also from
+the guest.</p>
+</div>
+<div class="section" id="kvm-cap-sync-regs">
+<h2>6.74 KVM_CAP_SYNC_REGS<a class="headerlink" href="#kvm-cap-sync-regs" title="Permalink to this headline">¶</a></h2>
+<p>Architectures: s390, x86
+Target: s390: always enabled, x86: vcpu
+Parameters: none
+Returns: x86: KVM_CHECK_EXTENSION returns a bit-array indicating which register
+sets are supported (bitfields defined in arch/x86/include/uapi/asm/kvm.h).</p>
+<p>As described above in the kvm_sync_regs struct info in section 5 (kvm_run):
+KVM_CAP_SYNC_REGS “allow[s] userspace to access certain guest registers
+without having to call SET/GET_*REGS”. This reduces overhead by eliminating
+repeated ioctl calls for setting and/or getting register values. This is
+particularly important when userspace is making synchronous guest state
+modifications, e.g. when emulating and/or intercepting instructions in
+userspace.</p>
+<p>For s390 specifics, please refer to the source code.</p>
+<p>For x86:
+- the register sets to be copied out to kvm_run are selectable</p>
+<blockquote>
+<div><p>by userspace (rather that all sets being copied out for every exit).</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>vcpu_events are available in addition to regs and sregs.</p></li>
+</ul>
+<p>For x86, the ‘kvm_valid_regs’ field of struct kvm_run is overloaded to
+function as an input bit-array field set by userspace to indicate the
+specific register sets to be copied out on the next exit.</p>
+<p>To indicate when userspace has modified values that should be copied into
+the vCPU, the all architecture bitarray field, ‘kvm_dirty_regs’ must be set.
+This is done using the same bitflags as for the ‘kvm_valid_regs’ field.
+If the dirty bit is not set, then the register set values will not be copied
+into the vCPU even if they’ve been modified.</p>
+<p>Unused bitfields in the bitarrays must be set to zero.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">kvm_sync_regs</span> <span class="p">{</span>
+        <span class="k">struct</span> <span class="n">kvm_regs</span> <span class="n">regs</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">kvm_sregs</span> <span class="n">sregs</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">kvm_vcpu_events</span> <span class="n">events</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">6. Capabilities that can be enabled on vCPUs</a><ul>
+<li><a class="reference internal" href="#kvm-cap-ppc-osi">6.1 KVM_CAP_PPC_OSI</a></li>
+<li><a class="reference internal" href="#kvm-cap-ppc-papr">6.2 KVM_CAP_PPC_PAPR</a></li>
+<li><a class="reference internal" href="#kvm-cap-sw-tlb">6.3 KVM_CAP_SW_TLB</a></li>
+<li><a class="reference internal" href="#kvm-cap-s390-css-support">6.4 KVM_CAP_S390_CSS_SUPPORT</a></li>
+<li><a class="reference internal" href="#kvm-cap-ppc-epr">6.5 KVM_CAP_PPC_EPR</a></li>
+<li><a class="reference internal" href="#kvm-cap-irq-mpic">6.6 KVM_CAP_IRQ_MPIC</a></li>
+<li><a class="reference internal" href="#kvm-cap-irq-xics">6.7 KVM_CAP_IRQ_XICS</a></li>
+<li><a class="reference internal" href="#kvm-cap-s390-irqchip">6.8 KVM_CAP_S390_IRQCHIP</a></li>
+<li><a class="reference internal" href="#kvm-cap-mips-fpu">6.9 KVM_CAP_MIPS_FPU</a></li>
+<li><a class="reference internal" href="#kvm-cap-mips-msa">6.10 KVM_CAP_MIPS_MSA</a></li>
+<li><a class="reference internal" href="#kvm-cap-sync-regs">6.74 KVM_CAP_SYNC_REGS</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="5.html"
+                        title="previous chapter">5. The kvm_run structure</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="7.html"
+                        title="next chapter">7. Capabilities that can be enabled on VMs</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/6.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="7.html" title="7. Capabilities that can be enabled on VMs"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="5.html" title="5. The kvm_run structure"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Linux KVM  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Takumi Takahashi.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+    </div>
+  </body>
+</html>
