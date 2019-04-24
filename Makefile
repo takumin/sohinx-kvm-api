@@ -8,6 +8,7 @@ SOURCEDIR     = source
 BUILDDIR      = build
 DEPLOYURI     = git@github.com:takumin/sphinx-linux-kvm.git
 DEPLOYBRANCH  = gh-pages
+DEPLOYDATE   != date "+%Y/%m/%d %H:%M:%S"
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -27,7 +28,7 @@ $(BUILDDIR)/deploy:
 	@git clone -b "$(DEPLOYBRANCH)" "$(DEPLOYURI)" "$(BUILDDIR)/deploy"
 
 deploy: $(BUILDDIR)/deploy
-	@$(SPHINXBUILD) "$(SOURCEDIR)" "$(BUILDDIR)/deploy" $(SPHINXOPTS) $(O)
+	@$(SPHINXBUILD) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/deploy"
 	@git -C "$(BUILDDIR)/deploy" add -A
-	@git -C "$(BUILDDIR)/deploy" commit -am "deploy $(shell date +\"%Y/%m/%d %H:%M:%S\")"
+	@git -C "$(BUILDDIR)/deploy" commit -am "deploy $(DEPLOYDATE)"
 	@git -C "$(BUILDDIR)/deploy" push
