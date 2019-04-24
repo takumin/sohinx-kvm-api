@@ -1,0 +1,284 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Welcome to Linux KVM Document’s documentation! &#8212; Linux KVM Document  documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="1. General description" href="api/index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="api/index.html" title="1. General description"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Linux KVM Document  documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-linux-kvm-document-s-documentation">
+<h1>Welcome to Linux KVM Document’s documentation!<a class="headerlink" href="#welcome-to-linux-kvm-document-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">KVM API Document</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">1. General description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html#file-descriptors">2. File descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html#extensions">3. Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html#api-description">4. API description</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-api-version">4.1 KVM_GET_API_VERSION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-create-vm">4.2 KVM_CREATE_VM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-msr-index-list-kvm-get-msr-feature-index-list">4.3 KVM_GET_MSR_INDEX_LIST, KVM_GET_MSR_FEATURE_INDEX_LIST</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-check-extension">4.4 KVM_CHECK_EXTENSION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-vcpu-mmap-size">4.5 KVM_GET_VCPU_MMAP_SIZE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-memory-region">4.6 KVM_SET_MEMORY_REGION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-create-vcpu">4.7 KVM_CREATE_VCPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-dirty-log-vm-ioctl">4.8 KVM_GET_DIRTY_LOG (vm ioctl)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-memory-alias">4.9 KVM_SET_MEMORY_ALIAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-run">4.10 KVM_RUN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-regs">4.11 KVM_GET_REGS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-regs">4.12 KVM_SET_REGS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-sregs">4.13 KVM_GET_SREGS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-sregs">4.14 KVM_SET_SREGS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-translate">4.15 KVM_TRANSLATE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-interrupt">4.16 KVM_INTERRUPT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-debug-guest">4.17 KVM_DEBUG_GUEST</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-msrs">4.18 KVM_GET_MSRS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-msrs">4.19 KVM_SET_MSRS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-cpuid">4.20 KVM_SET_CPUID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-signal-mask">4.21 KVM_SET_SIGNAL_MASK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-fpu">4.22 KVM_GET_FPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-fpu">4.23 KVM_SET_FPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-create-irqchip">4.24 KVM_CREATE_IRQCHIP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-irq-line">4.25 KVM_IRQ_LINE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-irqchip">4.26 KVM_GET_IRQCHIP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-irqchip">4.27 KVM_SET_IRQCHIP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-xen-hvm-config">4.28 KVM_XEN_HVM_CONFIG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-clock">4.29 KVM_GET_CLOCK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-clock">4.30 KVM_SET_CLOCK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-vcpu-events">4.31 KVM_GET_VCPU_EVENTS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-vcpu-events">4.32 KVM_SET_VCPU_EVENTS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-debugregs">4.33 KVM_GET_DEBUGREGS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-debugregs">4.34 KVM_SET_DEBUGREGS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-user-memory-region">4.35 KVM_SET_USER_MEMORY_REGION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-tss-addr">4.36 KVM_SET_TSS_ADDR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-enable-cap">4.37 KVM_ENABLE_CAP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-mp-state">4.38 KVM_GET_MP_STATE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-mp-state">4.39 KVM_SET_MP_STATE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-identity-map-addr">4.40 KVM_SET_IDENTITY_MAP_ADDR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-boot-cpu-id">4.41 KVM_SET_BOOT_CPU_ID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-xsave">4.42 KVM_GET_XSAVE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-xsave">4.43 KVM_SET_XSAVE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-xcrs">4.44 KVM_GET_XCRS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-xcrs">4.45 KVM_SET_XCRS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-supported-cpuid">4.46 KVM_GET_SUPPORTED_CPUID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-ppc-get-pvinfo">4.47 KVM_PPC_GET_PVINFO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-gsi-routing">4.52 KVM_SET_GSI_ROUTING</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-tsc-khz">4.55 KVM_SET_TSC_KHZ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-tsc-khz">4.56 KVM_GET_TSC_KHZ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-lapic">4.57 KVM_GET_LAPIC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-lapic">4.58 KVM_SET_LAPIC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-ioeventfd">4.59 KVM_IOEVENTFD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-dirty-tlb">4.60 KVM_DIRTY_TLB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-create-spapr-tce">4.62 KVM_CREATE_SPAPR_TCE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-allocate-rma">4.63 KVM_ALLOCATE_RMA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-nmi">4.64 KVM_NMI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-s390-ucas-map">4.65 KVM_S390_UCAS_MAP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-s390-ucas-unmap">4.66 KVM_S390_UCAS_UNMAP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-s390-vcpu-fault">4.67 KVM_S390_VCPU_FAULT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-one-reg">4.68 KVM_SET_ONE_REG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-one-reg">4.69 KVM_GET_ONE_REG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-kvmclock-ctrl">4.70 KVM_KVMCLOCK_CTRL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-signal-msi">4.71 KVM_SIGNAL_MSI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-create-pit2">4.71 KVM_CREATE_PIT2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-pit2">4.72 KVM_GET_PIT2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-pit2">4.73 KVM_SET_PIT2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-ppc-get-smmu-info">4.74 KVM_PPC_GET_SMMU_INFO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-irqfd">4.75 KVM_IRQFD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-ppc-allocate-htab">4.76 KVM_PPC_ALLOCATE_HTAB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-s390-interrupt">4.77 KVM_S390_INTERRUPT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-ppc-get-htab-fd">4.78 KVM_PPC_GET_HTAB_FD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-create-device">4.79 KVM_CREATE_DEVICE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-device-attr-kvm-get-device-attr">4.80 KVM_SET_DEVICE_ATTR/KVM_GET_DEVICE_ATTR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-has-device-attr">4.81 KVM_HAS_DEVICE_ATTR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-arm-vcpu-init">4.82 KVM_ARM_VCPU_INIT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-arm-preferred-target">4.83 KVM_ARM_PREFERRED_TARGET</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-reg-list">4.84 KVM_GET_REG_LIST</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-arm-set-device-addr-deprecated">4.85 KVM_ARM_SET_DEVICE_ADDR (deprecated)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-ppc-rtas-define-token">4.86 KVM_PPC_RTAS_DEFINE_TOKEN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-guest-debug">4.87 KVM_SET_GUEST_DEBUG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-emulated-cpuid">4.88 KVM_GET_EMULATED_CPUID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-s390-mem-op">4.89 KVM_S390_MEM_OP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-s390-get-skeys">4.90 KVM_S390_GET_SKEYS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-s390-set-skeys">4.91 KVM_S390_SET_SKEYS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-s390-irq">4.92 KVM_S390_IRQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-s390-get-irq-state">4.94 KVM_S390_GET_IRQ_STATE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-s390-set-irq-state">4.95 KVM_S390_SET_IRQ_STATE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-smi">4.96 KVM_SMI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-ppc-multitce">4.97 KVM_CAP_PPC_MULTITCE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-create-spapr-tce-64">4.98 KVM_CREATE_SPAPR_TCE_64</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-reinject-control">4.99 KVM_REINJECT_CONTROL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-ppc-configure-v3-mmu">4.100 KVM_PPC_CONFIGURE_V3_MMU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-ppc-get-rmmu-info">4.101 KVM_PPC_GET_RMMU_INFO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-ppc-resize-hpt-prepare">4.102 KVM_PPC_RESIZE_HPT_PREPARE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-ppc-resize-hpt-commit">4.103 KVM_PPC_RESIZE_HPT_COMMIT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-x86-get-mce-cap-supported">4.104 KVM_X86_GET_MCE_CAP_SUPPORTED</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-x86-setup-mce">4.105 KVM_X86_SETUP_MCE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-x86-set-mce">4.106 KVM_X86_SET_MCE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-s390-get-cmma-bits">4.107 KVM_S390_GET_CMMA_BITS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-s390-set-cmma-bits">4.108 KVM_S390_SET_CMMA_BITS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-ppc-get-cpu-char">4.109 KVM_PPC_GET_CPU_CHAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-memory-encrypt-op">4.110 KVM_MEMORY_ENCRYPT_OP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-memory-encrypt-reg-region">4.111 KVM_MEMORY_ENCRYPT_REG_REGION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-memory-encrypt-unreg-region">4.112 KVM_MEMORY_ENCRYPT_UNREG_REGION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-hyperv-eventfd">4.113 KVM_HYPERV_EVENTFD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-nested-state">4.114 KVM_GET_NESTED_STATE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-set-nested-state">4.115 KVM_SET_NESTED_STATE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-un-register-coalesced-mmio">4.116 KVM_(UN)REGISTER_COALESCED_MMIO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-clear-dirty-log-vm-ioctl">4.117 KVM_CLEAR_DIRTY_LOG (vm ioctl)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-get-supported-hv-cpuid">4.118 KVM_GET_SUPPORTED_HV_CPUID</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html#the-kvm-run-structure">5. The kvm_run structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html#capabilities-that-can-be-enabled-on-vcpus">6. Capabilities that can be enabled on vCPUs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-ppc-osi">6.1 KVM_CAP_PPC_OSI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-ppc-papr">6.2 KVM_CAP_PPC_PAPR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-sw-tlb">6.3 KVM_CAP_SW_TLB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-s390-css-support">6.4 KVM_CAP_S390_CSS_SUPPORT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-ppc-epr">6.5 KVM_CAP_PPC_EPR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-irq-mpic">6.6 KVM_CAP_IRQ_MPIC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-irq-xics">6.7 KVM_CAP_IRQ_XICS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-s390-irqchip">6.8 KVM_CAP_S390_IRQCHIP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-mips-fpu">6.9 KVM_CAP_MIPS_FPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-mips-msa">6.10 KVM_CAP_MIPS_MSA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-sync-regs">6.74 KVM_CAP_SYNC_REGS</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html#capabilities-that-can-be-enabled-on-vms">7. Capabilities that can be enabled on VMs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-ppc-enable-hcall">7.1 KVM_CAP_PPC_ENABLE_HCALL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-s390-user-sigp">7.2 KVM_CAP_S390_USER_SIGP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-s390-vector-registers">7.3 KVM_CAP_S390_VECTOR_REGISTERS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-s390-user-stsi">7.4 KVM_CAP_S390_USER_STSI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-split-irqchip">7.5 KVM_CAP_SPLIT_IRQCHIP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-s390-ri">7.6 KVM_CAP_S390_RI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-x2apic-api">7.7 KVM_CAP_X2APIC_API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-s390-user-instr0">7.8 KVM_CAP_S390_USER_INSTR0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-s390-gs">7.9 KVM_CAP_S390_GS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-s390-ais">7.10 KVM_CAP_S390_AIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-ppc-smt">7.11 KVM_CAP_PPC_SMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-ppc-fwnmi">7.12 KVM_CAP_PPC_FWNMI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-x86-disable-exits">7.13 KVM_CAP_X86_DISABLE_EXITS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-s390-hpage-1m">7.14 KVM_CAP_S390_HPAGE_1M</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-msr-platform-info">7.15 KVM_CAP_MSR_PLATFORM_INFO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-ppc-nested-hv">7.16 KVM_CAP_PPC_NESTED_HV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-exception-payload">7.17 KVM_CAP_EXCEPTION_PAYLOAD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-manual-dirty-log-protect">7.18 KVM_CAP_MANUAL_DIRTY_LOG_PROTECT</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html#other-capabilities">8. Other capabilities.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-ppc-hwrng">8.1 KVM_CAP_PPC_HWRNG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-hyperv-synic">8.2 KVM_CAP_HYPERV_SYNIC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-ppc-radix-mmu">8.3 KVM_CAP_PPC_RADIX_MMU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-ppc-hash-mmu-v3">8.4 KVM_CAP_PPC_HASH_MMU_V3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-mips-vz">8.5 KVM_CAP_MIPS_VZ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-mips-te">8.6 KVM_CAP_MIPS_TE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-mips-64bit">8.7 KVM_CAP_MIPS_64BIT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-arm-user-irq">8.9 KVM_CAP_ARM_USER_IRQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-ppc-smt-possible">8.10 KVM_CAP_PPC_SMT_POSSIBLE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-hyperv-synic2">8.11 KVM_CAP_HYPERV_SYNIC2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-hyperv-vp-index">8.12 KVM_CAP_HYPERV_VP_INDEX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-s390-ais-migration">8.13 KVM_CAP_S390_AIS_MIGRATION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-s390-psw">8.14 KVM_CAP_S390_PSW</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-s390-gmap">8.15 KVM_CAP_S390_GMAP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-s390-cow">8.16 KVM_CAP_S390_COW</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-s390-bpb">8.17 KVM_CAP_S390_BPB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-hyperv-tlbflush">8.18 KVM_CAP_HYPERV_TLBFLUSH</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-arm-inject-serror-esr">8.19 KVM_CAP_ARM_INJECT_SERROR_ESR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/index.html#kvm-cap-hyperv-send-ipi">8.20 KVM_CAP_HYPERV_SEND_IPI</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to Linux KVM Document’s documentation!</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="api/index.html"
+                        title="next chapter">1. General description</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="api/index.html" title="1. General description"
+             >next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Linux KVM Document  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Takumi Takahashi.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
+    </div>
+  </body>
+</html>
