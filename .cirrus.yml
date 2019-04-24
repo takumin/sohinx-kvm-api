@@ -1,0 +1,8 @@
+container:
+  image: python:3
+
+build_task:
+  setup_script:
+  - git submodule update --init --recursive
+  - pip install -r requirements.txt
+  build_script: sphinx-build -M html source build
