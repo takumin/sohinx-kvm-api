@@ -40,8 +40,8 @@ deploy:
 			"$(DEPLOYDIR)"; \
 	fi
 	@if [ -n "$(CIRRUS_CI)" ]; then \
-		git -C "$(DEPLOYDIR)" config --local user.email "cirrus-ci@$(CIRRUS_BUILD_ID)"
-		git -C "$(DEPLOYDIR)" config --local user.name "Cirrus CI"
+		git -C "$(DEPLOYDIR)" config --local user.email "cirrus-ci@$(CIRRUS_BUILD_ID)"; \
+		git -C "$(DEPLOYDIR)" config --local user.name "Cirrus CI"; \
 	fi
 	@git -C "$(DEPLOYDIR)" clean -xdf
 	@git -C "$(DEPLOYDIR)" reset --hard HEAD
