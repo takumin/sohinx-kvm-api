@@ -8,4 +8,4 @@ task:
   - pip install -r requirements.txt
   environment:
     AUTH_TOKEN: ENCRYPTED[c070b8ad3fff870ed3a5d7340ff0f47c6980a8464f34f2bb721bc13b940e12536a5e95ad7b1edd97a60068667f8ba6d9]
-  build_script: make deploy
+  deploy_script: make deploy
