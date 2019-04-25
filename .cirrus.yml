@@ -2,17 +2,10 @@ container:
   image: python:3
 
 task:
-  name: build
+  only_if: $CIRRUS_BRANCH == 'master'
   setup_script:
   - git submodule update --init --recursive
   - pip install -r requirements.txt
-  build_script: make html
-
-task:
-  name: publish
-  depends_on:
-  - build
-  only_if: $CIRRUS_BRANCH == 'master'
   environment:
     AUTH_TOKEN: ENCRYPTED[c070b8ad3fff870ed3a5d7340ff0f47c6980a8464f34f2bb721bc13b940e12536a5e95ad7b1edd97a60068667f8ba6d9]
-  script: make deploy
+  build_script: make deploy
