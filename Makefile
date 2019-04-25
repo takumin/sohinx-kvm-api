@@ -24,10 +24,10 @@ help:
 livehtml:
 	@sphinx-autobuild -b html $(ALLSPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/html"
 
-$(BUILDDIR)/deploy:
-	@git clone -b "$(DEPLOYBRANCH)" "$(DEPLOYURI)" "$(BUILDDIR)/deploy"
-
-deploy: $(BUILDDIR)/deploy
+deploy:
+	@if [ ! -d "$(BUILDDIR)/deploy" ]; then \
+		git clone -b "$(DEPLOYBRANCH)" "$(DEPLOYURI)" "$(BUILDDIR)/deploy"; \
+	fi
 	@find "$(BUILDDIR)/deploy" -type f | xargs rm -fr
 	@$(SPHINXBUILD) $(SPHINXOPTS) "$(SOURCEDIR)" "$(BUILDDIR)/deploy"
 	@git -C "$(BUILDDIR)/deploy" add -A
