@@ -1,40 +1,178 @@
 
-<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8" />
-    <title>8. Other capabilities. &#8212; Linux KVM  documentation</title>
-    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>8. Other capabilities. &mdash; Linux KVM  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
     
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
     
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="prev" title="7. Capabilities that can be enabled on VMs" href="7.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="7.html" title="7. Capabilities that can be enabled on VMs"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Linux KVM  documentation</a> &#187;</li> 
-      </ul>
-    </div>  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Linux KVM
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Table Of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="1.html">1. General description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2.html">2. File descriptors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3.html">3. Extensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4.html">4. API description</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5.html">5. The kvm_run structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6.html">6. Capabilities that can be enabled on vCPUs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7.html">7. Capabilities that can be enabled on VMs</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">8. Other capabilities.</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#kvm-cap-ppc-hwrng">8.1 KVM_CAP_PPC_HWRNG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kvm-cap-hyperv-synic">8.2 KVM_CAP_HYPERV_SYNIC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kvm-cap-ppc-radix-mmu">8.3 KVM_CAP_PPC_RADIX_MMU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kvm-cap-ppc-hash-mmu-v3">8.4 KVM_CAP_PPC_HASH_MMU_V3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kvm-cap-mips-vz">8.5 KVM_CAP_MIPS_VZ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kvm-cap-mips-te">8.6 KVM_CAP_MIPS_TE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kvm-cap-mips-64bit">8.7 KVM_CAP_MIPS_64BIT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kvm-cap-arm-user-irq">8.9 KVM_CAP_ARM_USER_IRQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kvm-cap-ppc-smt-possible">8.10 KVM_CAP_PPC_SMT_POSSIBLE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kvm-cap-hyperv-synic2">8.11 KVM_CAP_HYPERV_SYNIC2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kvm-cap-hyperv-vp-index">8.12 KVM_CAP_HYPERV_VP_INDEX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kvm-cap-s390-ais-migration">8.13 KVM_CAP_S390_AIS_MIGRATION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kvm-cap-s390-psw">8.14 KVM_CAP_S390_PSW</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kvm-cap-s390-gmap">8.15 KVM_CAP_S390_GMAP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kvm-cap-s390-cow">8.16 KVM_CAP_S390_COW</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kvm-cap-s390-bpb">8.17 KVM_CAP_S390_BPB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kvm-cap-hyperv-tlbflush">8.18 KVM_CAP_HYPERV_TLBFLUSH</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kvm-cap-arm-inject-serror-esr">8.19 KVM_CAP_ARM_INJECT_SERROR_ESR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kvm-cap-hyperv-send-ipi">8.20 KVM_CAP_HYPERV_SEND_IPI</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Linux KVM</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>8. Other capabilities.</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/8.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <div class="section" id="other-capabilities">
 <h1>8. Other capabilities.<a class="headerlink" href="#other-capabilities" title="Permalink to this headline">¶</a></h1>
@@ -264,76 +402,50 @@ HvCallSendSyntheticClusterIpi, HvCallSendSyntheticClusterIpiEx.</p>
 </div>
 
 
+           </div>
+           
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">8. Other capabilities.</a><ul>
-<li><a class="reference internal" href="#kvm-cap-ppc-hwrng">8.1 KVM_CAP_PPC_HWRNG</a></li>
-<li><a class="reference internal" href="#kvm-cap-hyperv-synic">8.2 KVM_CAP_HYPERV_SYNIC</a></li>
-<li><a class="reference internal" href="#kvm-cap-ppc-radix-mmu">8.3 KVM_CAP_PPC_RADIX_MMU</a></li>
-<li><a class="reference internal" href="#kvm-cap-ppc-hash-mmu-v3">8.4 KVM_CAP_PPC_HASH_MMU_V3</a></li>
-<li><a class="reference internal" href="#kvm-cap-mips-vz">8.5 KVM_CAP_MIPS_VZ</a></li>
-<li><a class="reference internal" href="#kvm-cap-mips-te">8.6 KVM_CAP_MIPS_TE</a></li>
-<li><a class="reference internal" href="#kvm-cap-mips-64bit">8.7 KVM_CAP_MIPS_64BIT</a></li>
-<li><a class="reference internal" href="#kvm-cap-arm-user-irq">8.9 KVM_CAP_ARM_USER_IRQ</a></li>
-<li><a class="reference internal" href="#kvm-cap-ppc-smt-possible">8.10 KVM_CAP_PPC_SMT_POSSIBLE</a></li>
-<li><a class="reference internal" href="#kvm-cap-hyperv-synic2">8.11 KVM_CAP_HYPERV_SYNIC2</a></li>
-<li><a class="reference internal" href="#kvm-cap-hyperv-vp-index">8.12 KVM_CAP_HYPERV_VP_INDEX</a></li>
-<li><a class="reference internal" href="#kvm-cap-s390-ais-migration">8.13 KVM_CAP_S390_AIS_MIGRATION</a></li>
-<li><a class="reference internal" href="#kvm-cap-s390-psw">8.14 KVM_CAP_S390_PSW</a></li>
-<li><a class="reference internal" href="#kvm-cap-s390-gmap">8.15 KVM_CAP_S390_GMAP</a></li>
-<li><a class="reference internal" href="#kvm-cap-s390-cow">8.16 KVM_CAP_S390_COW</a></li>
-<li><a class="reference internal" href="#kvm-cap-s390-bpb">8.17 KVM_CAP_S390_BPB</a></li>
-<li><a class="reference internal" href="#kvm-cap-hyperv-tlbflush">8.18 KVM_CAP_HYPERV_TLBFLUSH</a></li>
-<li><a class="reference internal" href="#kvm-cap-arm-inject-serror-esr">8.19 KVM_CAP_ARM_INJECT_SERROR_ESR</a></li>
-<li><a class="reference internal" href="#kvm-cap-hyperv-send-ipi">8.20 KVM_CAP_HYPERV_SEND_IPI</a></li>
-</ul>
-</li>
-</ul>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="7.html" class="btn btn-neutral float-left" title="7. Capabilities that can be enabled on VMs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="7.html"
-                        title="previous chapter">7. Capabilities that can be enabled on VMs</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/api/8.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Takumi Takahashi
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="../genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="7.html" title="7. Capabilities that can be enabled on VMs"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">Linux KVM  documentation</a> &#187;</li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2019, Takumi Takahashi.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
 </html>
