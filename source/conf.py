@@ -57,3 +57,21 @@ html_static_path = ['_static']
 # directly to the root of the documentation.
 #
 html_extra_path = ['_extra']
+
+# Read the Docs Configuration
+#
+html_theme_options = {
+    #'canonical_url': '',
+    'analytics_id': 'UA-62539992-1',
+    #'logo_only': False,
+    'display_version': False,
+    #'prev_next_buttons_location': 'bottom',
+    #'style_external_links': False,
+    #'style_nav_header_background': 'white',
+    # Toc options
+    #'collapse_navigation': True,
+    #'sticky_navigation': True,
+    #'navigation_depth': 4,
+    #'includehidden': True,
+    #'titles_only': False
+}
