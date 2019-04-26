@@ -1,3 +1,5 @@
+[![Build Status](https://api.cirrus-ci.com/github/takumin/sphinx-linux-kvm.svg)](https://cirrus-ci.com/github/takumin/sphinx-linux-kvm)
+
 # sohinx-linux-kvm
 
 Linux KVMに関するメモ書き
